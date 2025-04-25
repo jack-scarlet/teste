@@ -1,4 +1,14 @@
-/* Estilos Gerais dos Cards de Anime */
+/* Container Principal da Grid */
+#animeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Estilos dos Cards de Anime */
 .anime-card {
   position: relative;
   overflow: hidden;
@@ -7,6 +17,7 @@
   background-color: #f5f5f5;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Garante que não ultrapasse o espaço da grid */
 }
 
 .anime-card:hover {
@@ -34,7 +45,7 @@
 }
 
 .anime-card:hover img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 /* Estilo do Título no Topo */
@@ -43,7 +54,7 @@
   top: 0;
   left: 0;
   right: 0;
-  padding: 12px 10px 20px 10px; /* Mais padding na parte inferior para o gradiente */
+  padding: 12px 10px 20px 10px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 80%, transparent 100%);
   color: white;
   z-index: 2;
@@ -109,6 +120,12 @@
 
 /* Responsividade */
 @media (max-width: 768px) {
+  #animeGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    padding: 12px;
+  }
+  
   .anime-title-overlay span {
     font-size: 12px;
     padding: 8px 6px 16px;
@@ -119,5 +136,12 @@
     padding: 3px 6px;
     bottom: 8px;
     right: 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #animeGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
   }
 }
