@@ -20,6 +20,35 @@ function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
   
+  // Verifica se o anime tem URL
+  if (!anime.url || anime.url === '#') {
+    card.innerHTML = `
+      <div class="anime-card-container unavailable">
+        <img 
+          src="${anime.image}" 
+          alt="${anime.title}"
+          loading="lazy"
+          onerror="this.src='placeholder.jpg'"
+        >
+        <div class="anime-title-overlay">
+          <span>${anime.title}</span>
+        </div>
+        <div class="unavailable-overlay">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>Indisponível</span>
+        </div>
+      </div>
+    `;
+    
+    // Adiciona evento para mostrar mensagem
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      showUnavailableMessage();
+    });
+    
+    return card;
+  }
+
   // Obtém o link completo
   const fullUrl = getAnimeFullUrl(anime);
   const isCloudLink = fullUrl.includes('cloud.anitsu.moe');
@@ -60,7 +89,7 @@ function getAnimeFullUrl(anime) {
   const cloudBaseUrl = localStorage.getItem(CLOUD_KEY);
   
   // Se não tem URL no anime, retorna fallback ou '#'
-  if (!anime.url) return anime.fallbackUrl || '#';
+  if (!anime.url || anime.url === '#') return anime.fallbackUrl || '#';
   
   // Se já é uma URL completa, retorna diretamente
   if (anime.url.startsWith('http')) {
@@ -69,9 +98,17 @@ function getAnimeFullUrl(anime) {
   
   // Se tem cloud configurada, combina com o caminho do anime
   if (cloudBaseUrl) {
+    // Remove a barra inicial se existir
     const animePath = anime.url.startsWith('/') ? anime.url.substring(1) : anime.url;
+    
+    // Remove qualquer codificação existente
+    const decodedPath = decodeURIComponent(animePath);
+    
+    // Prepara o separador (? ou &) dependendo da URL base
     const separator = cloudBaseUrl.includes('?') ? '&' : '?';
-    return `${cloudBaseUrl}${separator}path=/${encodeURIComponent(animePath)}`;
+    
+    // Codifica apenas uma vez o caminho completo
+    return `${cloudBaseUrl}${separator}path=/${encodeURIComponent(decodedPath)}`;
   }
   
   // Fallback padrão (pode ser seu site principal ou outro)
@@ -79,6 +116,12 @@ function getAnimeFullUrl(anime) {
 }
 
 function openModal(anime) {
+  // Se o anime não tem URL, mostra mensagem e não abre modal
+  if (!anime.url || anime.url === '#') {
+    showUnavailableMessage();
+    return;
+  }
+
   // Mapeamento de valores para exibição amigável
   const nationalityMap = {
     'JP': 'Japão',
@@ -194,6 +237,27 @@ function openModal(anime) {
     showCloudConfigPrompt();
     modal.remove();
   });
+}
+
+function showUnavailableMessage() {
+  // Remove notificação existente se houver
+  const existingToast = document.querySelector('.unavailable-toast');
+  if (existingToast) existingToast.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'unavailable-toast';
+  toast.innerHTML = `
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Anime não disponível no acervo</span>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Remove após 3 segundos
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
 }
 
 function showCloudConfigPrompt() {
