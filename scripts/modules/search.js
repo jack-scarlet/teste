@@ -1,12 +1,13 @@
+
 import { normalizeString } from './utils.js';
 
 export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Remove apenas caracteres especiais (mantém espaços)
+  // Remove caracteres especiais para busca mais ampla
   const normalizeSearchTerm = (str) => {
-    return normalizeString(str).replace(/[:\-_\.]/g, '');
+    .replace(/[:\-_\.\s]/g, ''); // Remove todos os espaços e caracteres especiais
   };
 
   const handleSearch = () => {
@@ -17,6 +18,7 @@ export function initSearch(data, onSearch) {
     }
 
     const results = data.filter(anime => {
+      // Campos para buscar
       const searchFields = [
         anime.title,
         ...(anime.alternative_titles?.synonyms || []),
@@ -29,8 +31,9 @@ export function initSearch(data, onSearch) {
       );
     });
 
+    // Exibe mensagem se nenhum resultado for encontrado
     if (results.length === 0) {
-      displayNoResultsMessage(input.value);
+      displayNoResultsMessage(term);
     } else {
       removeNoResultsMessage();
     }
