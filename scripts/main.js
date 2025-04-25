@@ -4,6 +4,8 @@ import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
+import { initCloudButton } from './modules/cloud.js';
+
 
 // Estado global
 let allAnimes = [];
@@ -34,6 +36,7 @@ const getCurrentFilters = () => {
   // 1. Inicialização do DOM
   initMobileMenu();
   showLoadingSkeleton();
+  initCloudButton(); // Inicializa o botão da nuvem
 
   // 2. Carregamento de dados (SEM cache)
   allAnimes = await fetchAnimeData();
