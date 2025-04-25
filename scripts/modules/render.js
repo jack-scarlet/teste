@@ -20,17 +20,23 @@ export function renderAnimeGrid(animes, startIdx = 0, chunkSize = 30) {
 function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
+  
   card.innerHTML = `
-    <a href="${anime.url}" target="_blank" aria-label="${anime.title}">
-      <img 
-        src="${anime.image}" 
-        alt="${anime.title}" 
-        loading="lazy"
-        onerror="this.src='placeholder.jpg'"
-      >
-      <h3>${anime.title}</h3>
-    </a>
+    <div class="anime-card-container">
+      <a href="${anime.url}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
+        <img 
+          src="${anime.image}" 
+          alt="${anime.title}"
+          loading="lazy"
+          onerror="this.src='placeholder.jpg'"
+        >
+        <div class="anime-title-overlay">
+          <span>${anime.title}</span>
+        </div>
+      </a>
+    </div>
   `;
+  
   return card;
 }
 
