@@ -11,8 +11,9 @@ export const FILTER_CONFIG = [
       ? [{ value: anime.start_season.year, label: anime.start_season.year }]
       : []
   },
-  // Adicione outros filtros conforme necessário
 ];
+  // Adicione outros filtros conforme necessário
+
 
 export function applyFilters(animes, filters) {
   return animes.filter(anime => {
