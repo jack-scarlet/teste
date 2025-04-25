@@ -51,32 +51,98 @@ function createAnimeCard(anime) {
 }
 
 function openModal(anime) {
-  // Cria o modal básico - você pode personalizar depois
+  // Mapeamento de valores para exibição amigável
+  const nationalityMap = {
+    'JP': 'Japão',
+    'KR': 'Coreia do Sul', 
+    'CN': 'China',
+    '': 'Outros'
+  };
+
+  const seasonMap = {
+    'winter': 'Inverno',
+    'spring': 'Primavera',
+    'summer': 'Verão',
+    'fall': 'Outono'
+  };
+
+  // Formatação dos dados
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Não disponível';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR');
+  };
+
   const modal = document.createElement('div');
   modal.className = 'anime-modal';
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-modal">&times;</span>
-      <h3>${anime.title}</h3>
-      <p>Adicionar às listas</p>
-      <!-- Aqui você pode adicionar mais conteúdo depois -->
+      
+      <div class="modal-header">
+        <h3>${anime.title}</h3>
+        <div class="anime-meta">
+          <span class="anime-type ${anime.media_type}">${anime.media_type || 'N/A'}</span>
+          <span class="anime-nationality">${nationalityMap[anime.nat] || 'Outros'}</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="info-grid">
+          <div class="info-group">
+            <h4>Informações Básicas</h4>
+            <p><strong>Data de início:</strong> ${formatDate(anime.start_date)}</p>
+            <p><strong>Data de término:</strong> ${formatDate(anime.end_date)}</p>
+            <p><strong>Episódios:</strong> ${anime.num_episodes || 'N/A'}</p>
+          </div>
+
+          <div class="info-group">
+            <h4>Temporada</h4>
+            <p>${seasonMap[anime.start_season?.season] || 'N/A'} ${anime.start_season?.year || ''}</p>
+          </div>
+
+          <div class="info-group">
+            <h4>Origem</h4>
+            <p><strong>Tipo:</strong> ${anime.media_type || 'N/A'}</p>
+            <p><strong>Fonte:</strong> ${anime.source || 'N/A'}</p>
+            <p><strong>Estúdio:</strong> ${anime.studios?.map(s => s.name).join(', ') || 'N/A'}</p>
+          </div>
+        </div>
+
+        <div class="info-group">
+          <h4>Gêneros</h4>
+          <div class="genre-tags">
+            ${anime.genres?.map(g => `<span class="genre-tag">${g.name}</span>`).join('') || 'N/A'}
+          </div>
+        </div>
+
+        ${anime.synopsis ? `
+        <div class="info-group">
+          <h4>Sinopse</h4>
+          <p class="synopsis">${anime.synopsis}</p>
+        </div>
+        ` : ''}
+
+        ${anime.alternative_titles?.synonyms?.length ? `
+        <div class="info-group">
+          <h4>Títulos Alternativos</h4>
+          <p>${anime.alternative_titles.synonyms.join(', ')}</p>
+        </div>
+        ` : ''}
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-button favorite">Favoritar</button>
+        <button class="modal-button watchlist">Adicionar à Lista</button>
+      </div>
     </div>
   `;
 
-  // Adiciona ao body
   document.body.appendChild(modal);
 
-  // Fecha o modal ao clicar no X
-  modal.querySelector('.close-modal').addEventListener('click', () => {
-    modal.remove();
-  });
-
-  // Fecha o modal ao clicar fora
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.remove();
-    }
-  });
+  // Fechar modal
+  modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', (e) => e.target === modal && modal.remove());
 }
 
 export function showLoadingSkeleton(count = 12) {
