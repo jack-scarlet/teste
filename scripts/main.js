@@ -72,3 +72,13 @@ function getCurrentFilters() {
     return acc;
   }, {});
 }
+
+// scripts/main.js
+async function initApp() {
+  // Carrega dados diretamente SEM cache
+  const allAnimes = await fetchAnimeData();
+  renderAnimeGrid(allAnimes);
+  
+  // Debug opcional (remove em produção)
+  console.log("Total de animes:", allAnimes.length);
+}
