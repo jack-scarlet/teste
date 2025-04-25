@@ -11,6 +11,11 @@ export const FILTER_CONFIG = [
       ? [{ value: anime.start_season.year, label: anime.start_season.year }]
       : []
   },
+  {
+    id: 'studio', 
+    label: 'Estúdio',
+    extract: anime => anime.studios || []
+  },
   // Adicione outros filtros conforme necessário
 ];
 
