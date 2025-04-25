@@ -140,16 +140,10 @@ body {
 
 /* Estilo do Título no Topo */
 .anime-title-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 12px 10px 20px 10px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
-    color: white;
-    z-index: 2;
-    backdrop-filter: blur(2px); /* Efeito sutil de desfoque no fundo */
+    background: none; /* Remove completamente o gradiente */
+    padding: 12px 10px; /* Ajuste o padding */
 }
+   
 
 .anime-title-overlay span {
     display: -webkit-box;
