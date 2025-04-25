@@ -1,4 +1,4 @@
-import { fetchAnimeData, cacheData, getCachedData } from './modules/api.js';
+import { fetchAnimeData } from './modules/api.js'; // Removidas cacheData/getCachedData
 import { initMobileMenu, createFilterSelect } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
@@ -11,29 +11,50 @@ let filteredAnimes = [];
 let currentChunk = 0;
 const CHUNK_SIZE = 30;
 
+// Funções auxiliares LOCAIS
+const extractUniqueOptions = (animes, extractFn) => {
+  const options = new Set();
+  animes.forEach(anime => {
+    const items = extractFn(anime) || [];
+    items.forEach(item => options.add(item.value));
+  });
+  return Array.from(options).map(value => ({ value, label: value }));
+};
+
+const getCurrentFilters = () => {
+  return FILTER_CONFIG.reduce((acc, { id }) => {
+    const select = document.getElementById(id);
+    if (select) acc[id] = select.value;
+    return acc;
+  }, {});
+};
+
+// Função principal ÚNICA
 (async function initApp() {
-  // 1. Inicializa componentes DOM
+  // 1. Inicialização do DOM
   initMobileMenu();
   showLoadingSkeleton();
 
-  // 2. Carrega dados
-  allAnimes = getCachedData() || await fetchAnimeData();
-  if (allAnimes) cacheData(allAnimes);
+  // 2. Carregamento de dados (SEM cache)
+  allAnimes = await fetchAnimeData();
+  console.log("Dados carregados:", allAnimes.length, "animes"); // Debug
 
-  // 3. Inicializa filtros
+  // 3. Configuração de filtros
   FILTER_CONFIG.forEach(({ id, label, extract }) => {
-    const options = extractUniqueOptions(allAnimes, extract);
-    const select = createFilterSelect(id, label, options);
+    const select = createFilterSelect(
+      id, 
+      label, 
+      extractUniqueOptions(allAnimes, extract)
+    );
     
     select.addEventListener('change', () => {
-      const filters = getCurrentFilters();
-      filteredAnimes = applyFilters(allAnimes, filters);
+      filteredAnimes = applyFilters(allAnimes, getCurrentFilters());
       currentChunk = 0;
       renderAnimeGrid(filteredAnimes, 0, CHUNK_SIZE);
     });
   });
 
-  // 4. Inicializa busca
+  // 4. Configuração da busca
   initSearch(allAnimes, (results) => {
     filteredAnimes = results;
     currentChunk = 0;
@@ -42,43 +63,18 @@ const CHUNK_SIZE = 30;
 
   // 5. Carregamento lazy
   setupIntersectionObserver(() => {
-    currentChunk += 1;
-    renderAnimeGrid(
-      filteredAnimes, 
-      currentChunk * CHUNK_SIZE, 
-      CHUNK_SIZE
-    );
+    if (filteredAnimes.length > currentChunk * CHUNK_SIZE) {
+      currentChunk += 1;
+      renderAnimeGrid(filteredAnimes, currentChunk * CHUNK_SIZE, CHUNK_SIZE);
+    }
   });
 
-  // 6. Primeiro render
+  // 6. Renderização inicial
   filteredAnimes = [...allAnimes];
   renderAnimeGrid(filteredAnimes, 0, CHUNK_SIZE);
 })();
 
-// Funções auxiliares locais
-function extractUniqueOptions(animes, extractFn) {
-  const options = new Set();
-  animes.forEach(anime => {
-    const items = extractFn(anime) || [];
-    items.forEach(item => options.add(item.value));
-  });
-  return Array.from(options).map(value => ({ value, label: value }));
-}
-
-function getCurrentFilters() {
-  return FILTER_CONFIG.reduce((acc, { id }) => {
-    const select = document.getElementById(id);
-    if (select) acc[id] = select.value;
-    return acc;
-  }, {});
-}
-
-// scripts/main.js
-async function initApp() {
-  // Carrega dados diretamente SEM cache
-  const allAnimes = await fetchAnimeData();
-  renderAnimeGrid(allAnimes);
-  
-  // Debug opcional (remove em produção)
-  console.log("Total de animes:", allAnimes.length);
+// Exposição para debug (opcional)
+if (import.meta.env?.MODE === 'development') {
+  window._debug = { allAnimes: () => allAnimes };
 }
