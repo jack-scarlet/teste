@@ -131,11 +131,7 @@ function openModal(anime) {
         ` : ''}
       </div>
 
-      <div class="modal-footer">
-        <button class="modal-button favorite">Favoritar</button>
-        <button class="modal-button watchlist">Adicionar à Lista</button>
-      </div>
-    </div>
+    
   `;
 
   document.body.appendChild(modal);
