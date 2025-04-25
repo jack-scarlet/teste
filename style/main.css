@@ -559,3 +559,16 @@ body {
 .anime-card:hover .anime-image-link {
   z-index: 2;
 }
+
+/* Adicione ao seu main.css */
+.modal-button.open-link {
+  background-color: var(--cor-secundaria);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-button.open-link:hover {
+  background-color: #3d8b40;
+}
