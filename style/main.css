@@ -144,6 +144,30 @@ body {
     top: 0;
     left: 0;
     right: 0;
+    /* Estilo do Título no Topo */
+.anime-title-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 10px 20px 10px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 90%, transparent 100%);
+    color: white;
+    z-index: 2;
+}
+
+.anime-title-overlay span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
     padding: 12px 10px 20px 10px;
     color: white;
     z-index: 2;
