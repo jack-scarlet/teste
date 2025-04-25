@@ -1,8 +1,17 @@
+/* Estilos Gerais dos Cards de Anime */
 .anime-card {
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  aspect-ratio: 2/3; /* Mantém proporção de poster */
+  aspect-ratio: 2/3; /* Proporção padrão de posters */
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.anime-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .anime-card-container {
@@ -28,14 +37,16 @@
   transform: scale(1.05);
 }
 
+/* Estilo do Título no Topo */
 .anime-title-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  padding: 10px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+  padding: 12px 10px 20px 10px; /* Mais padding na parte inferior para o gradiente */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 80%, transparent 100%);
   color: white;
+  z-index: 2;
 }
 
 .anime-title-overlay span {
@@ -45,19 +56,68 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 600;
   line-height: 1.3;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
+/* Badge de Nacionalidade */
+.anime-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Bandeiras por nacionalidade */
+.anime-badge[data-nat="JP"]::before {
+  content: "🇯🇵";
+}
+.anime-badge[data-nat="CN"]::before {
+  content: "🇨🇳";
+}
+.anime-badge[data-nat="KR"]::before {
+  content: "🇰🇷";
+}
+.anime-badge:not([data-nat])::before {
+  content: "🌐";
+}
+
+/* Skeleton Loading */
 .skeleton-loader {
   aspect-ratio: 2/3;
-  background: #ddd;
+  background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%);
   border-radius: 8px;
+  background-size: 200% 100%;
   animation: pulse 1.5s infinite ease-in-out;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.3; }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .anime-title-overlay span {
+    font-size: 12px;
+    padding: 8px 6px 16px;
+  }
+  
+  .anime-badge {
+    font-size: 10px;
+    padding: 3px 6px;
+    bottom: 8px;
+    right: 8px;
+  }
 }
