@@ -98,17 +98,17 @@ function getAnimeFullUrl(anime) {
   
   // Se tem cloud configurada, combina com o caminho do anime
   if (cloudBaseUrl) {
-    // Remove a barra inicial se existir
-    const animePath = anime.url.startsWith('/') ? anime.url.substring(1) : anime.url;
+    // Remove o '?path=' inicial se existir
+    const animePath = anime.url.startsWith('?path=') ? anime.url.substring(6) : anime.url;
     
-    // Remove qualquer codificação existente
-    const decodedPath = decodeURIComponent(animePath);
+    // Verifica se a URL base já tem parâmetros
+    const hasQuery = cloudBaseUrl.includes('?');
     
-    // Prepara o separador (? ou &) dependendo da URL base
-    const separator = cloudBaseUrl.includes('?') ? '&' : '?';
+    // Se a URL base já tem parâmetros, usa &, senão usa ?
+    const separator = hasQuery ? '&' : '?';
     
-    // Codifica apenas uma vez o caminho completo
-    return `${cloudBaseUrl}${separator}path=/${encodeURIComponent(decodedPath)}`;
+    // Monta a URL final
+    return `${cloudBaseUrl}${separator}path=${animePath}`;
   }
   
   // Fallback padrão (pode ser seu site principal ou outro)
