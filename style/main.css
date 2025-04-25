@@ -542,3 +542,20 @@ body {
 .cloud-prompt button:hover {
     background-color: var(--cor-secundaria);
 }
+
+/* Adicione ao seu main.css */
+.anime-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.anime-image-link:hover {
+  transform: scale(1.02);
+}
+
+.anime-card:hover .anime-image-link {
+  z-index: 2;
+}
