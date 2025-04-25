@@ -140,10 +140,15 @@ body {
 
 /* Estilo do Título no Topo */
 .anime-title-overlay {
-    background: none; /* Remove completamente o gradiente */
-    padding: 12px 10px; /* Ajuste o padding */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 10px 20px 10px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 80%, transparent 100%);
+    color: white;
+    z-index: 2;
 }
-   
 
 .anime-title-overlay span {
     display: -webkit-box;
@@ -154,7 +159,7 @@ body {
     font-size: 14px;
     font-weight: 600;
     line-height: 1.3;
-    /* Removi o text-shadow para ficar mais limpo */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
 /* Badge de Nacionalidade */
