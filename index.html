@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catálogo com +8000 animes para assistir online">
+    
+    <!-- Open Graph / Twitter Cards (mantido do original) -->
+    <meta property="og:title" content="Anitsu Catalógo">
+    <meta property="og:description" content="+8000 Animes">
+    <meta property="og:image" content="https://anitsu.netlify.app/previa.jpg">
+    <meta property="og:url" content="https://anitsu.netlify.app">
+    
+    <!-- Pré-carregue recursos críticos -->
+    <link rel="preload" href="style/main.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <title>Anitsu Catálogo</title>
+</head>
+<body>
+    <header class="header">
+        <a href="https://anitsu.moe" target="_blank" aria-label="Ir para Anitsu.moe">
+            <img src="icon.png" alt="Ícone do Anitsu" class="logo" width="40" height="40">
+        </a>
+        
+        <button id="mobileMenuButton" class="mobile-menu-button" aria-label="Abrir menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <nav id="mainNav" class="main-nav">
+            <a href='/pages/manga_list_index' class="botao botao-mangas">Mangás</a>
+            <a href='/pages/desenho_index' class="botao botao-desenhos">Desenhos</a>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="search-container">
+            <input type="text" id="searchInput" placeholder="Pesquisar animes..." aria-label="Campo de pesquisa">
+            <button id="searchButton" class="search-button" aria-label="Pesquisar">
+                <i class="fas fa-search"></i>
+            </button>
+        </section>
+
+        <div class="filters-container">
+            <button id="toggleFilter" class="botao botao-nuvem">
+                <i class="fas fa-filter"></i> Filtros
+            </button>
+            <div id="filterDropdown" class="filter-dropdown hidden">
+                <!-- Filtros serão injetados via JavaScript -->
+            </div>
+        </div>
+
+        <div id="animeGrid" class="anime-grid">
+            <!-- Placeholder para lazy loading -->
+            <div class="skeleton-loader"></div>
+        </div>
+
+        <!-- Trigger para carregamento lazy -->
+        <div class="load-more-trigger"></div>
+    </main>
+
+    <!-- Scripts no final do body para não bloquear renderização -->
+    <script src="scripts/main.js" type="module"></script>
+</body>
+</html>
