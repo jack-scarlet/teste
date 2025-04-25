@@ -204,3 +204,42 @@ body {
 .no-results strong {
   color: #ff6b6b;
 }
+
+/* Adicione ao seu arquivo CSS */
+.anime-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.anime-title-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+  color: white;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  
+  /* Limita a 2 linhas */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+  max-height: 2.4em; /* 2 linhas * 1.2 line-height */
+}
+
+.anime-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.anime-card:hover img {
+  transform: scale(1.03);
+}
