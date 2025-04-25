@@ -6,7 +6,7 @@ export function initSearch(data, onSearch) {
 
   // Remove caracteres especiais para busca mais ampla
   const normalizeSearchTerm = (str) => {
-    return normalizeString(str).replace(/[:\-_\.]/g, ' ');
+    .replace(/[:\-_\.\s]/g, '') // Remove todos os espaços e caracteres especiais
   };
 
   const handleSearch = () => {
