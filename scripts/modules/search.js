@@ -1,10 +1,10 @@
+// Versão final consolidada
 import { normalizeString } from './utils.js';
 
 export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Remove caracteres especiais para busca mais ampla
   const normalizeSearchTerm = (str) => {
     return normalizeString(str).replace(/[:\-_\.\s]/g, '');
   };
@@ -16,17 +16,15 @@ export function initSearch(data, onSearch) {
       return;
     }
 
-    // Primeiro: Filtra e classifica os resultados
     const scoredResults = data.map(anime => {
       let score = 0;
       const fields = [
-        { value: anime.title, priority: 4 },         // Maior prioridade
+        { value: anime.title, priority: 4 },
         ...(anime.alternative_titles?.synonyms?.map(text => ({ value: text, priority: 3 })) || []),
         { value: anime.alternative_titles?.en, priority: 2 },
-        { value: anime.alternative_titles?.ja, priority: 1 }  // Menor prioridade
+        { value: anime.alternative_titles?.ja, priority: 1 }
       ].filter(field => field.value);
 
-      // Verifica cada campo e atribui pontuação
       fields.forEach(field => {
         if (normalizeSearchTerm(field.value).includes(term)) {
           score = Math.max(score, field.priority);
@@ -35,13 +33,12 @@ export function initSearch(data, onSearch) {
 
       return { anime, score };
     })
-    .filter(item => item.score > 0)  // Remove itens sem match
-    .sort((a, b) => b.score - a.score)  // Ordena por prioridade
-    .map(item => item.anime);  // Extrai apenas os animes
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(item => item.anime);
 
-    // Exibe mensagem se nenhum resultado for encontrado
     if (scoredResults.length === 0) {
-      displayNoResultsMessage(input.value);  // Mostra o termo original
+      displayNoResultsMessage(input.value);
     } else {
       removeNoResultsMessage();
     }
