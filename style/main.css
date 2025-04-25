@@ -572,3 +572,74 @@ body {
 .modal-button.open-link:hover {
   background-color: #3d8b40;
 }
+
+/* Estilo para animes indisponíveis */
+.anime-card-container.unavailable {
+  position: relative;
+  cursor: not-allowed;
+}
+
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ff6b6b;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.unavailable-overlay i {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+/* Estilo para a mensagem flutuante */
+.unavailable-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #d32f2f;
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--borda-raio);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+.unavailable-toast i {
+  font-size: 1.2rem;
+}
+
+@keyframes slideUp {
+  from {
+    bottom: -50px;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+/* Adicione isso se já não existir */
+.fade-out {
+  animation: fadeOut 0.5s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
