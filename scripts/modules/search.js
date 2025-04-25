@@ -6,7 +6,7 @@ export function initSearch(data, onSearch) {
 
   // Remove caracteres especiais para busca mais ampla
   const normalizeSearchTerm = (str) => {
-    return normalizeString(str).replace(/[:\-_\.\s]/g, ''); // Remove todos os espaços e caracteres especiais
+    return normalizeString(str).replace(/[:\-_\.\s]/g, '');
   };
 
   const handleSearch = () => {
@@ -16,28 +16,37 @@ export function initSearch(data, onSearch) {
       return;
     }
 
-    const results = data.filter(anime => {
-      // Campos para buscar
-      const searchFields = [
-        anime.title,
-        ...(anime.alternative_titles?.synonyms || []),
-        anime.alternative_titles?.en,
-        anime.alternative_titles?.ja
-      ].filter(Boolean);
+    // Primeiro: Filtra e classifica os resultados
+    const scoredResults = data.map(anime => {
+      let score = 0;
+      const fields = [
+        { value: anime.title, priority: 4 },         // Maior prioridade
+        ...(anime.alternative_titles?.synonyms?.map(text => ({ value: text, priority: 3 })) || []),
+        { value: anime.alternative_titles?.en, priority: 2 },
+        { value: anime.alternative_titles?.ja, priority: 1 }  // Menor prioridade
+      ].filter(field => field.value);
 
-      return searchFields.some(field => 
-        normalizeSearchTerm(field).includes(term)
-      );
-    });
+      // Verifica cada campo e atribui pontuação
+      fields.forEach(field => {
+        if (normalizeSearchTerm(field.value).includes(term)) {
+          score = Math.max(score, field.priority);
+        }
+      });
+
+      return { anime, score };
+    })
+    .filter(item => item.score > 0)  // Remove itens sem match
+    .sort((a, b) => b.score - a.score)  // Ordena por prioridade
+    .map(item => item.anime);  // Extrai apenas os animes
 
     // Exibe mensagem se nenhum resultado for encontrado
-    if (results.length === 0) {
-      displayNoResultsMessage(term);
+    if (scoredResults.length === 0) {
+      displayNoResultsMessage(input.value);  // Mostra o termo original
     } else {
       removeNoResultsMessage();
     }
     
-    onSearch(results);
+    onSearch(scoredResults);
   };
 
   // Mensagem quando não encontra resultados
