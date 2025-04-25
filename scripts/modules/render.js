@@ -2,7 +2,6 @@ export function renderAnimeGrid(animes, startIdx = 0, chunkSize = 30) {
   const grid = document.getElementById('animeGrid');
   const chunk = animes.slice(startIdx, startIdx + chunkSize);
 
-  // Limpa apenas no primeiro carregamento
   if (startIdx === 0) {
     grid.innerHTML = '';
   }
@@ -34,10 +33,50 @@ function createAnimeCard(anime) {
           <span>${anime.title}</span>
         </div>
       </a>
+      <button class="anime-add-button" data-anime-id="${anime.id}">
+        <span class="plus-icon">+</span>
+      </button>
     </div>
   `;
-  
+
+  // Adiciona o event listener para o botão
+  const addButton = card.querySelector('.anime-add-button');
+  addButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openModal(anime);
+  });
+
   return card;
+}
+
+function openModal(anime) {
+  // Cria o modal básico - você pode personalizar depois
+  const modal = document.createElement('div');
+  modal.className = 'anime-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>${anime.title}</h3>
+      <p>Adicionar às listas</p>
+      <!-- Aqui você pode adicionar mais conteúdo depois -->
+    </div>
+  `;
+
+  // Adiciona ao body
+  document.body.appendChild(modal);
+
+  // Fecha o modal ao clicar no X
+  modal.querySelector('.close-modal').addEventListener('click', () => {
+    modal.remove();
+  });
+
+  // Fecha o modal ao clicar fora
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
 }
 
 export function showLoadingSkeleton(count = 12) {
