@@ -4,53 +4,33 @@ export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Função que detecta se um título tem caracteres especiais
-  const hasSpecialChars = (title) => /[:._-]/.test(title);
-
-  // Normalização condicional
-  const prepareForSearch = (str, isTarget) => {
-    let normalized = normalizeString(str);
-    if (isTarget) {
-      normalized = normalized.replace(/[:._-]/g, '');
-    }
-    return normalized;
+  // Remove apenas caracteres especiais (mantém espaços)
+  const normalizeSearchTerm = (str) => {
+    return normalizeString(str).replace(/[:\-_\.]/g, '');
   };
 
   const handleSearch = () => {
-    const rawTerm = input.value.trim();
-    if (!rawTerm) {
+    const term = normalizeSearchTerm(input.value);
+    if (!term) {
       onSearch(data);
       return;
     }
 
     const results = data.filter(anime => {
       const searchFields = [
-        { text: anime.title, isSpecial: hasSpecialChars(anime.title) },
-        ...(anime.alternative_titles?.synonyms?.map(text => ({
-          text,
-          isSpecial: hasSpecialChars(text)
-        })) || []),
-        {
-          text: anime.alternative_titles?.en,
-          isSpecial: anime.alternative_titles?.en && hasSpecialChars(anime.alternative_titles.en)
-        },
-        {
-          text: anime.alternative_titles?.ja,
-          isSpecial: anime.alternative_titles?.ja && hasSpecialChars(anime.alternative_titles.ja)
-        }
-      ].filter(item => item.text);
+        anime.title,
+        ...(anime.alternative_titles?.synonyms || []),
+        anime.alternative_titles?.en,
+        anime.alternative_titles?.ja
+      ].filter(Boolean);
 
-      return searchFields.some(({ text, isSpecial }) => {
-        const preparedTitle = prepareForSearch(text, isSpecial);
-        const preparedTerm = prepareForSearch(rawTerm, isSpecial);
-        
-        return preparedTitle.includes(preparedTerm);
-      });
+      return searchFields.some(field => 
+        normalizeSearchTerm(field).includes(term)
+      );
     });
 
-    // Restante do código (mensagens de erro)...
     if (results.length === 0) {
-      displayNoResultsMessage(rawTerm);
+      displayNoResultsMessage(input.value);
     } else {
       removeNoResultsMessage();
     }
