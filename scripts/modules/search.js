@@ -4,15 +4,13 @@ export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Normalização mais inteligente
-  const prepareSearchTerm = (str) => {
-    return normalizeString(str)
-      .replace(/[:\-_\.]/g, ' ') // Substitui caracteres especiais por espaço
-      .replace(/\s+/g, ' ');     // Remove espaços extras
+  // Remove apenas caracteres especiais (mantém espaços)
+  const normalizeSearchTerm = (str) => {
+    return normalizeString(str).replace(/[:\-_\.]/g, '');
   };
 
   const handleSearch = () => {
-    const term = prepareSearchTerm(input.value).trim();
+    const term = normalizeSearchTerm(input.value);
     if (!term) {
       onSearch(data);
       return;
@@ -26,21 +24,13 @@ export function initSearch(data, onSearch) {
         anime.alternative_titles?.ja
       ].filter(Boolean);
 
-      // Busca por correspondência exata ou palavras separadas
-      return searchFields.some(field => {
-        const normalizedField = prepareSearchTerm(field);
-        
-        // Verifica se o termo está contido OU se há correspondência de palavras
-        return normalizedField.includes(term) || 
-               term.split(' ').every(word => 
-                 normalizedField.includes(word)
-               );
-      });
+      return searchFields.some(field => 
+        normalizeSearchTerm(field).includes(term)
+      );
     });
 
-    // Restante do código (mensagens)...
     if (results.length === 0) {
-      displayNoResultsMessage(input.value); // Mostra o termo original
+      displayNoResultsMessage(input.value);
     } else {
       removeNoResultsMessage();
     }
