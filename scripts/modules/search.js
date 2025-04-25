@@ -4,53 +4,43 @@ export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Função que detecta se um título tem caracteres especiais
-  const hasSpecialChars = (title) => /[:._-]/.test(title);
-
-  // Normalização condicional
-  const prepareForSearch = (str, isTarget) => {
-    let normalized = normalizeString(str);
-    if (isTarget) {
-      normalized = normalized.replace(/[:._-]/g, '');
-    }
-    return normalized;
+  // Normalização mais inteligente
+  const prepareSearchTerm = (str) => {
+    return normalizeString(str)
+      .replace(/[:\-_\.]/g, ' ') // Substitui caracteres especiais por espaço
+      .replace(/\s+/g, ' ');     // Remove espaços extras
   };
 
   const handleSearch = () => {
-    const rawTerm = input.value.trim();
-    if (!rawTerm) {
+    const term = prepareSearchTerm(input.value).trim();
+    if (!term) {
       onSearch(data);
       return;
     }
 
     const results = data.filter(anime => {
       const searchFields = [
-        { text: anime.title, isSpecial: hasSpecialChars(anime.title) },
-        ...(anime.alternative_titles?.synonyms?.map(text => ({
-          text,
-          isSpecial: hasSpecialChars(text)
-        })) || []),
-        {
-          text: anime.alternative_titles?.en,
-          isSpecial: anime.alternative_titles?.en && hasSpecialChars(anime.alternative_titles.en)
-        },
-        {
-          text: anime.alternative_titles?.ja,
-          isSpecial: anime.alternative_titles?.ja && hasSpecialChars(anime.alternative_titles.ja)
-        }
-      ].filter(item => item.text);
+        anime.title,
+        ...(anime.alternative_titles?.synonyms || []),
+        anime.alternative_titles?.en,
+        anime.alternative_titles?.ja
+      ].filter(Boolean);
 
-      return searchFields.some(({ text, isSpecial }) => {
-        const preparedTitle = prepareForSearch(text, isSpecial);
-        const preparedTerm = prepareForSearch(rawTerm, isSpecial);
+      // Busca por correspondência exata ou palavras separadas
+      return searchFields.some(field => {
+        const normalizedField = prepareSearchTerm(field);
         
-        return preparedTitle.includes(preparedTerm);
+        // Verifica se o termo está contido OU se há correspondência de palavras
+        return normalizedField.includes(term) || 
+               term.split(' ').every(word => 
+                 normalizedField.includes(word)
+               );
       });
     });
 
-    // Restante do código (mensagens de erro)...
+    // Restante do código (mensagens)...
     if (results.length === 0) {
-      displayNoResultsMessage(rawTerm);
+      displayNoResultsMessage(input.value); // Mostra o termo original
     } else {
       removeNoResultsMessage();
     }
@@ -59,33 +49,4 @@ export function initSearch(data, onSearch) {
   };
 
   // ... (mantenha o restante do código igual)
-}
-
-  // Mensagem quando não encontra resultados
-  const displayNoResultsMessage = (term) => {
-    removeNoResultsMessage();
-    
-    const message = document.createElement('div');
-    message.id = 'noResultsMessage';
-    message.className = 'no-results';
-    message.innerHTML = `
-      <p>Nenhum anime encontrado para <strong>"${term}"</strong></p>
-      <p class="suggestion">Sugestão: Tente buscar por termos mais gerais</p>
-    `;
-    
-    const animeGrid = document.getElementById('animeGrid');
-    animeGrid.parentNode.insertBefore(message, animeGrid);
-  };
-
-  const removeNoResultsMessage = () => {
-    const existingMsg = document.getElementById('noResultsMessage');
-    if (existingMsg) existingMsg.remove();
-  };
-
-  // Event listeners
-  input.addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') handleSearch();
-  });
-
-  button.addEventListener('click', handleSearch);
 }
