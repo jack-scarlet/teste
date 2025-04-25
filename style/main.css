@@ -183,3 +183,24 @@ body {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
 }
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  margin: 1rem 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.no-results p {
+  margin: 0.5rem 0;
+}
+
+.no-results .suggestion {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+.no-results strong {
+  color: #ff6b6b;
+}
