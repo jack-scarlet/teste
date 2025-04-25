@@ -14,19 +14,20 @@ const CHUNK_SIZE = 30;
 // Funções auxiliares LOCAIS
 const extractUniqueOptions = (animes, extractFn) => {
   const options = new Set();
+  
   animes.forEach(anime => {
     const items = extractFn(anime) || [];
-    items.forEach(item => options.add(item.value));
+    items.forEach(item => {
+      if (item && item.name) { // Adaptado para seu formato de gêneros/estúdios
+        options.add(item.name);
+      }
+    });
   });
-  return Array.from(options).map(value => ({ value, label: value }));
-};
-
-const getCurrentFilters = () => {
-  return FILTER_CONFIG.reduce((acc, { id }) => {
-    const select = document.getElementById(id);
-    if (select) acc[id] = select.value;
-    return acc;
-  }, {});
+  
+  return Array.from(options).map(value => ({ 
+    value, 
+    label: value 
+  }));
 };
 
 // Função principal ÚNICA
