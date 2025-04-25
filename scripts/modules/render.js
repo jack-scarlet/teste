@@ -20,9 +20,12 @@ function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
   
+  // Obtém o link completo
+  const fullUrl = getAnimeFullUrl(anime);
+  
   card.innerHTML = `
     <div class="anime-card-container">
-      <a href="${anime.url}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
+      <a href="${fullUrl}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
         <img 
           src="${anime.image}" 
           alt="${anime.title}"
@@ -47,7 +50,30 @@ function createAnimeCard(anime) {
     openModal(anime);
   });
 
-  return card;
+return card;
+}
+
+// Nova função auxiliar para gerar a URL completa
+function getAnimeFullUrl(anime) {
+  const cloudBaseUrl = localStorage.getItem('anitsu_cloud_link');
+  
+  // Se não tem URL no anime, retorna fallback ou '#'
+  if (!anime.url) return anime.fallbackUrl || '#';
+  
+  // Se já é uma URL completa, retorna diretamente
+  if (anime.url.startsWith('http')) {
+    return anime.url;
+  }
+  
+  // Se tem cloud configurada, combina com o caminho do anime
+  if (cloudBaseUrl) {
+    const animePath = anime.url.startsWith('/') ? anime.url.substring(1) : anime.url;
+    const separator = cloudBaseUrl.includes('?') ? '&' : '?';
+    return `${cloudBaseUrl}${separator}path=/${encodeURIComponent(animePath)}`;
+  }
+  
+  // Fallback padrão (pode ser seu site principal ou outro)
+  return `https://anitsu.moe${anime.url.startsWith('/') ? '' : '/'}${anime.url}`;
 }
 
 function openModal(anime) {
