@@ -4,20 +4,21 @@ export function initSearch(data, onSearch) {
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
-  // Remove caracteres especiais para busca mais ampla
-  const normalizeSearchTerm = (str) => {
-    return normalizeString(str).replace(/[:\-_\.\s]/g, ''); // Remove todos os espaços e caracteres especiais
+  // Normalização mais inteligente
+  const prepareSearchTerm = (str) => {
+    return normalizeString(str)
+      .replace(/[:\-_\.]/g, ' ') // Substitui caracteres especiais por espaço
+      .replace(/\s+/g, ' ');     // Remove espaços extras
   };
 
   const handleSearch = () => {
-    const term = normalizeSearchTerm(input.value);
+    const term = prepareSearchTerm(input.value).trim();
     if (!term) {
       onSearch(data);
       return;
     }
 
     const results = data.filter(anime => {
-      // Campos para buscar
       const searchFields = [
         anime.title,
         ...(anime.alternative_titles?.synonyms || []),
@@ -25,14 +26,21 @@ export function initSearch(data, onSearch) {
         anime.alternative_titles?.ja
       ].filter(Boolean);
 
-      return searchFields.some(field => 
-        normalizeSearchTerm(field).includes(term)
-      );
+      // Busca por correspondência exata ou palavras separadas
+      return searchFields.some(field => {
+        const normalizedField = prepareSearchTerm(field);
+        
+        // Verifica se o termo está contido OU se há correspondência de palavras
+        return normalizedField.includes(term) || 
+               term.split(' ').every(word => 
+                 normalizedField.includes(word)
+               );
+      });
     });
 
-    // Exibe mensagem se nenhum resultado for encontrado
+    // Restante do código (mensagens)...
     if (results.length === 0) {
-      displayNoResultsMessage(term);
+      displayNoResultsMessage(input.value); // Mostra o termo original
     } else {
       removeNoResultsMessage();
     }
