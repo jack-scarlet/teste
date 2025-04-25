@@ -2,12 +2,10 @@
 export async function fetchAnimeData() {
   try {
     const response = await fetch('list/anime_list.json');
-    if (!response.ok) throw new Error('Erro ao carregar dados');
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
-    console.error("Falha ao carregar animes:", error);
-    return [];
+    console.error("Falha ao carregar dados:", error);
+    return []; // Retorna array vazio para segurança
   }
 }
-
-// REMOVA completamente as funções cacheData e getCachedData
