@@ -22,6 +22,7 @@ function createAnimeCard(anime) {
   
   // Obtém o link completo
   const fullUrl = getAnimeFullUrl(anime);
+  const isCloudLink = fullUrl.includes('cloud.anitsu.moe');
   
   card.innerHTML = `
     <div class="anime-card-container">
@@ -35,6 +36,7 @@ function createAnimeCard(anime) {
         <div class="anime-title-overlay">
           <span>${anime.title}</span>
         </div>
+        ${isCloudLink ? '<span class="cloud-indicator" title="Abrir na nuvem"><i class="fas fa-cloud"></i></span>' : ''}
       </a>
       <button class="anime-add-button" data-anime-id="${anime.id}">
         <span class="plus-icon">+</span>
@@ -50,12 +52,12 @@ function createAnimeCard(anime) {
     openModal(anime);
   });
 
-return card;
+  return card;
 }
 
-// Nova função auxiliar para gerar a URL completa
 function getAnimeFullUrl(anime) {
-  const cloudBaseUrl = localStorage.getItem('anitsu_cloud_link');
+  const CLOUD_KEY = 'anitsu_cloud_link';
+  const cloudBaseUrl = localStorage.getItem(CLOUD_KEY);
   
   // Se não tem URL no anime, retorna fallback ou '#'
   if (!anime.url) return anime.fallbackUrl || '#';
@@ -99,8 +101,14 @@ function openModal(anime) {
     return date.toLocaleDateString('pt-BR');
   };
 
+  const fullUrl = getAnimeFullUrl(anime);
+  const isCloudLink = fullUrl.includes('cloud.anitsu.moe');
+  const CLOUD_KEY = 'anitsu_cloud_link';
+  const hasCloudConfig = !!localStorage.getItem(CLOUD_KEY);
+
   const modal = document.createElement('div');
   modal.className = 'anime-modal';
+  
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-modal">&times;</span>
@@ -110,6 +118,7 @@ function openModal(anime) {
         <div class="anime-meta">
           <span class="anime-type ${anime.media_type}">${anime.media_type || 'N/A'}</span>
           <span class="anime-nationality">${nationalityMap[anime.nat] || 'Outros'}</span>
+          ${isCloudLink ? '<span class="cloud-badge"><i class="fas fa-cloud"></i> Nuvem</span>' : ''}
         </div>
       </div>
 
@@ -157,14 +166,110 @@ function openModal(anime) {
         ` : ''}
       </div>
 
-    
+      <div class="modal-footer">
+        <a href="${fullUrl}" target="_blank" class="modal-button open-link">
+          <i class="fas fa-external-link-alt"></i> ${isCloudLink ? 'Abrir na Nuvem' : 'Abrir Anime'}
+        </a>
+        
+        <button class="modal-button cloud-config" data-action="config">
+          <i class="fas fa-cog"></i> ${hasCloudConfig ? 'Alterar Nuvem' : 'Configurar Nuvem'}
+        </button>
+        
+        <button class="modal-button watchlist">
+          <i class="fas fa-bookmark"></i> Favoritos
+        </button>
+      </div>
+    </div>
   `;
 
   document.body.appendChild(modal);
 
-  // Fechar modal
+  // Configurar eventos
   modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
   modal.addEventListener('click', (e) => e.target === modal && modal.remove());
+  
+  // Configurar botão da nuvem
+  modal.querySelector('.cloud-config').addEventListener('click', (e) => {
+    e.stopPropagation();
+    showCloudConfigPrompt();
+    modal.remove();
+  });
+}
+
+function showCloudConfigPrompt() {
+  const CLOUD_KEY = 'anitsu_cloud_link';
+  const existingPrompt = document.querySelector('.cloud-prompt');
+  if (existingPrompt) existingPrompt.remove();
+
+  const promptHTML = `
+    <div class="cloud-prompt">
+      <h3>Configurar Link da Nuvem</h3>
+      <p>Insira o link base da sua nuvem no formato:</p>
+      <p><code>https://cloud.anitsu.moe/nextcloud/s/randomstring</code></p>
+      <input type="text" id="cloudLinkInput" placeholder="Cole o link base aqui" 
+             value="${localStorage.getItem(CLOUD_KEY) || ''}">
+      <div class="prompt-actions">
+        <button id="saveCloudLink" class="prompt-button save">Salvar</button>
+        <button id="clearCloudLink" class="prompt-button clear">Limpar</button>
+      </div>
+      <div class="cloud-hint">
+        <i class="fas fa-info-circle"></i> O link será combinado com os caminhos específicos de cada anime
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', promptHTML);
+  document.getElementById('cloudLinkInput').focus();
+
+  // Configurar eventos do prompt
+  document.getElementById('saveCloudLink').addEventListener('click', saveCloudConfig);
+  document.getElementById('clearCloudLink').addEventListener('click', clearCloudConfig);
+  
+  // Adicionar suporte para tecla Enter
+  document.getElementById('cloudLinkInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') saveCloudConfig();
+  });
+}
+
+function saveCloudConfig() {
+  const CLOUD_KEY = 'anitsu_cloud_link';
+  const input = document.getElementById('cloudLinkInput');
+  const link = input.value.trim();
+
+  if (isValidCloudLink(link)) {
+    localStorage.setItem(CLOUD_KEY, link);
+    document.querySelector('.cloud-prompt').remove();
+    showToast('Configuração da nuvem salva com sucesso!', 'success');
+  } else {
+    showToast('Por favor, insira um link válido no formato especificado.', 'error');
+    input.focus();
+  }
+}
+
+function clearCloudConfig() {
+  const CLOUD_KEY = 'anitsu_cloud_link';
+  localStorage.removeItem(CLOUD_KEY);
+  document.querySelector('.cloud-prompt').remove();
+  showToast('Configuração da nuvem removida.', 'warning');
+}
+
+function isValidCloudLink(link) {
+  return /^https:\/\/cloud\.anitsu\.moe\/nextcloud\/s\/[a-zA-Z0-9]+(\?.*)?$/.test(link);
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast-notification ${type}`;
+  toast.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+    <span>${message}</span>
+  `;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
 }
 
 export function showLoadingSkeleton(count = 12) {
