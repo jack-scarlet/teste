@@ -21,6 +21,10 @@ function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
   
+  function createAnimeCard(anime) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
+  
   card.innerHTML = `
     <div class="anime-card-container">
       <a href="${anime.url}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
@@ -33,6 +37,7 @@ function createAnimeCard(anime) {
         <div class="anime-title-overlay">
           <span>${anime.title}</span>
         </div>
+        ${anime.nat ? `<div class="anime-badge" data-nat="${anime.nat}">${anime.nat}</div>` : ''}
       </a>
     </div>
   `;
