@@ -1,44 +1,41 @@
-export function initMobileMenu() {
-  const menuButton = document.getElementById('mobileMenuButton');
-  const mainNav = document.getElementById('mainNav');
-
-  menuButton?.addEventListener('click', () => {
-    mainNav.classList.toggle('visible');
-    menuButton.setAttribute(
-      'aria-expanded', 
-      mainNav.classList.contains('visible')
-    );
-  });
-}
-
+// modules/dom.js
 export function createFilterSelect(id, label, options) {
-  const container = document.getElementById('filterDropdown');
+  const container = document.createElement('div');
+  container.className = 'filter-container';
   
-  const wrapper = document.createElement('div');
-  wrapper.className = 'filter-group';
-
   const labelElement = document.createElement('label');
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-
+  
   const select = document.createElement('select');
   select.id = id;
+  select.className = 'filter-select';
   
+  // Opção padrão
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
   defaultOption.textContent = `Todos ${label.toLowerCase()}`;
   select.appendChild(defaultOption);
-
+  
+  // Adiciona opções
   options.forEach(option => {
-    const optElement = document.createElement('option');
-    optElement.value = option.value;
-    optElement.textContent = option.label;
-    select.appendChild(optElement);
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.label;
+    select.appendChild(opt);
   });
-
-  wrapper.appendChild(labelElement);
-  wrapper.appendChild(select);
-  container.appendChild(wrapper);
-
+  
+  container.appendChild(labelElement);
+  container.appendChild(select);
+  
+  // Adiciona ao DOM - assumindo que existe um elemento com id 'filters'
+  const filtersContainer = document.getElementById('filters') || document.body;
+  filtersContainer.appendChild(container);
+  
   return select;
+}
+
+// Outras funções do dom.js...
+export function initMobileMenu() {
+  // Implementação existente
 }
