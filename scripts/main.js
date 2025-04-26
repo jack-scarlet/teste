@@ -8,7 +8,6 @@ import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
 const HOME_PAGE_DISPLAY_COUNT = 24;
-const HISTORY_KEY = 'history';
 
 // Estado global
 let allAnimes = [];
@@ -43,23 +42,23 @@ const getCurrentFilters = () => {
     const response = await fetchAnimeData();
     console.log('Resposta completa da API:', response);
 
-    // Extrai os animes principais e o history
-    allAnimes = Array.isArray(response) ? response : response.animes || [];
-    const historyAnime = response[HISTORY_KEY]?.[0];
+    // CORREÇÃO: Acessa corretamente a estrutura do JSON
+    // Os animes principais estão no objeto response, não em response.animes
+    allAnimes = [];
+    
+    // Percorre todas as propriedades do objeto response
+    for (const key in response) {
+      // Ignora a propriedade 'history' e adiciona todas as outras (que são arrays de animes)
+      if (key !== 'history' && Array.isArray(response[key])) {
+        allAnimes = [...allAnimes, ...response[key]];
+      }
+    }
+
+    // Agora pega o anime de history corretamente
+    const historyAnime = response.history?.[0];
     
     console.log('Total de animes:', allAnimes.length);
     console.log('Anime history:', historyAnime);
-
-    // Verifica se o history anime existe na lista principal
-    if (historyAnime) {
-      const existsInMainList = allAnimes.some(a => a.id === historyAnime.id);
-      console.log('History anime existe na lista principal?', existsInMainList);
-      
-      if (!existsInMainList) {
-        allAnimes.unshift(historyAnime); // Adiciona no início se não existir
-        console.log('History anime adicionado à lista principal');
-      }
-    }
 
     // Página inicial - Lógica especial
     if (isHomePage) {
