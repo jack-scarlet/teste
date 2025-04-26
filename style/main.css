@@ -643,3 +643,50 @@ body {
     visibility: hidden;
   }
 }
+
+/* Estilo para as ações do prompt */
+.prompt-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.prompt-button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: var(--borda-raio);
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.prompt-button.save {
+    background-color: var(--cor-secundaria);
+    color: white;
+}
+
+.prompt-button.clear {
+    background-color: #444;
+    color: white;
+}
+
+.prompt-button.acervo {
+    background-color: #6a5acd;
+    color: white;
+}
+
+/* Mensagem de erro */
+.error-message {
+    color: #ff6b6b;
+    margin-top: 10px;
+    font-size: 0.9em;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
