@@ -697,64 +697,67 @@ body {
 }
 
 /* Estilo para o container de filtros */
-.filter-dropdown {
+.filters-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
+  align-items: center;
+  gap: 0.75rem;
   padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease-in-out;
+  background: #f9f9f9;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Oculta com transição */
-.filter-dropdown.hidden {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  opacity: 0;
-  transition: all 0.3s ease-in-out;
-}
-
-/* Cada seletor */
-.filter-container {
-  flex: 1 1 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.filter-select {
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  background-color: #fff;
-  transition: border-color 0.2s;
-}
-
-.filter-select:focus {
-  border-color: #0077ff;
-  outline: none;
-}
-
-/* Botão Filtros */
-#toggleFilter {
+.botao {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #4e73df;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background-color 0.2s ease;
 }
 
-#toggleFilter.open i {
-  transform: rotate(180deg);
+.botao:hover {
+  background-color: #2e59d9;
 }
 
-#toggleFilter i {
-  transition: transform 0.3s ease;
+.filter-dropdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  padding-top: 1rem;
 }
 
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
 
+.filter-container:hover {
+  transform: translateY(-2px);
+}
+
+.filter-select {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background-color: #fff;
+}
+
+.hidden {
+  display: none;
+}
