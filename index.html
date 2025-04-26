@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Catálogo com +8000 animes para assistir online">
     
-    <!-- Open Graph / Twitter Cards -->
+    <!-- Open Graph / Twitter Cards (mantido do original) -->
     <meta property="og:title" content="Anitsu Catalógo">
     <meta property="og:description" content="+8000 Animes">
     <meta property="og:image" content="https://anitsu.netlify.app/previa.jpg">
@@ -45,15 +45,22 @@
             </button>
         </section>
 
-        <!-- Seção de Filtros Simplificados -->
-        <section id="filters" class="filters-section">
-            <!-- Filtros serão injetados via JavaScript na ordem:
-                 1. Nacionalidade
-                 2. Gênero
-                 3. Ano
-                 4. Estúdio
-            -->
-        </section>
+<div class="filters-container">
+    <button id="toggleFilter" class="botao botao-nuvem">
+        <i class="fas fa-filter"></i> Filtros
+    </button>
+    
+    <!-- Novo botão Nuvem -->
+    <button id="cloudButton" class="botao botao-nuvem">
+        <i class="fas fa-cloud"></i> Nuvem
+    </button>
+    
+    <div id="filterDropdown" class="filter-dropdown hidden">
+        <!-- Filtros serão injetados via JavaScript -->
+    </div>
+</div>
+
+        
 
         <div id="animeGrid" class="anime-grid">
             <!-- Placeholder para lazy loading -->
