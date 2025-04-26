@@ -23,10 +23,14 @@ export const initCloudButton = () => {
                 <p><code>https://cloud.anitsu.moe/nextcloud/s/randomstring</code></p>
                 <input type="text" id="cloudLinkInput" placeholder="Cole o link completo aqui" 
                        value="${savedLink || ''}">
-                <div>
-                    <button id="saveCloudLink">Salvar</button>
-                    <button id="clearCloudLink">Limpar</button>
+                <div class="prompt-actions">
+                    <button id="saveCloudLink" class="prompt-button save">Salvar</button>
+                    <button id="clearCloudLink" class="prompt-button clear">Limpar</button>
+                    <button id="acervoButton" class="prompt-button acervo">
+                        <i class="fas fa-book"></i> Acervo
+                    </button>
                 </div>
+                <div id="cloudError" class="error-message"></div>
             </div>
         `;
         
@@ -37,6 +41,9 @@ export const initCloudButton = () => {
         
         document.getElementById('saveCloudLink').addEventListener('click', saveCloudLink);
         document.getElementById('clearCloudLink').addEventListener('click', clearCloudLink);
+        document.getElementById('acervoButton').addEventListener('click', () => {
+            window.open('https://anitsu.moe', '_blank');
+        });
         
         // Adiciona suporte para tecla Enter
         document.getElementById('cloudLinkInput').addEventListener('keypress', (e) => {
@@ -46,17 +53,24 @@ export const initCloudButton = () => {
     
     function saveCloudLink() {
         const linkInput = document.getElementById('cloudLinkInput').value.trim();
+        const errorElement = document.getElementById('cloudError');
         
-        if (linkInput && isValidCloudLink(linkInput)) {
-            localStorage.setItem(CLOUD_KEY, linkInput);
-            updateButtonAppearance(linkInput);
-            document.querySelector('.cloud-prompt').remove();
-            
-            // Opcional: Mostrar feedback visual
-            showToast('Link da nuvem salvo com sucesso!');
-        } else {
-            showToast('Por favor, insira um link válido no formato especificado.', 'error');
+        if (!linkInput) {
+            errorElement.textContent = 'Por favor, insira um link';
+            errorElement.style.display = 'block';
+            return;
         }
+        
+        if (!isValidCloudLink(linkInput)) {
+            errorElement.textContent = 'Formato incorreto! Use: https://cloud.anitsu.moe/nextcloud/s/seucodigo';
+            errorElement.style.display = 'block';
+            return;
+        }
+        
+        localStorage.setItem(CLOUD_KEY, linkInput);
+        updateButtonAppearance(linkInput);
+        document.querySelector('.cloud-prompt').remove();
+        showToast('Link da nuvem salvo com sucesso!');
     }
     
     function clearCloudLink() {
@@ -82,11 +96,13 @@ export const initCloudButton = () => {
         return /^https:\/\/cloud\.anitsu\.moe\/nextcloud\/s\/[a-zA-Z0-9]+$/.test(link);
     }
     
-    // Função opcional para mostrar feedback
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast-notification ${type}`;
-        toast.textContent = message;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        `;
         document.body.appendChild(toast);
         
         setTimeout(() => {
