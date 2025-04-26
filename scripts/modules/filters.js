@@ -1,172 +1,117 @@
 export const FILTER_CONFIG = [
-  // 1. Filtro por Categoria (A-Z, #) - Especial
+  // 1. Filtro por Categoria (A-Z, #)
   {
     id: 'category',
-    label: '🔠 Categoria',
-    icon: 'font', // Ícone opcional para interfaces
-    extract: () => [], // Implementado no componente
-    isSpecialFilter: true,
-    description: 'Filtrar por letra inicial do título'
+    label: 'Categoria',
+    extract: (anime, allAnimes) => {
+      // Esta função precisa ser implementada no componente que usa os filtros
+      // pois depende de como você organiza os animes por categoria
+      return [];
+    },
+    isSpecialFilter: true // Marca que este filtro precisa de tratamento especial
   },
   
   // 2. Filtro por Nacionalidade
   {
     id: 'nationality',
-    label: '🌎 Nacionalidade',
-    icon: 'globe',
+    label: 'Nacionalidade',
     extract: anime => {
       if (!anime.nat) return [];
       const countryName = getCountryName(anime.nat);
-      return [{ value: anime.nat, label: `${getFlagEmoji(anime.nat)} ${countryName}` }];
-    },
-    sort: (a, b) => a.label.localeCompare(b.label),
-    description: 'Filtrar por país de origem'
+      return [{ value: anime.nat, label: countryName }];
+    }
   },
   
-  // 3. Filtro por Gênero (ordenado alfabeticamente)
+  // 3. Filtro por Gênero
   {
     id: 'genre',
-    label: '🎭 Gêneros',
-    icon: 'tags',
+    label: 'Gênero',
     extract: anime => anime.genres?.map(g => ({ 
       value: g.name, 
-      label: `${getGenreEmoji(g.name)} ${g.name}` 
-    })) || [],
-    sort: (a, b) => a.label.localeCompare(b.label),
-    description: 'Selecione um ou mais gêneros',
-    isMultiSelect: true,
-    searchable: true
+      label: g.name 
+    })) || []
   },
   
-  // 4. Filtro por Temporada (com ordenação lógica)
+  // 4. Filtro por Temporada (season)
   {
     id: 'season',
-    label: '❄️ Temporada',
-    icon: 'calendar',
+    label: 'Temporada',
     extract: anime => {
       if (!anime.start_season?.season) return [];
       const seasonName = getSeasonName(anime.start_season.season);
-      return [{ 
-        value: anime.start_season.season, 
-        label: `${getSeasonEmoji(anime.start_season.season)} ${seasonName}` 
-      }];
-    },
-    sort: (a, b) => SEASON_ORDER.indexOf(a.value) - SEASON_ORDER.indexOf(b.value),
-    description: 'Filtrar por temporada de lançamento'
+      return [{ value: anime.start_season.season, label: seasonName }];
+    }
   },
   
-  // 5. Filtro por Ano (com ordenação decrescente)
+  // 5. Filtro por Ano
   {
     id: 'year',
-    label: '📅 Ano',
-    icon: 'calendar-alt',
+    label: 'Ano',
     extract: anime => anime.start_season?.year 
-      ? [{ value: anime.start_season.year, label: `🗓️ ${anime.start_season.year}` }]
-      : [],
-    sort: (a, b) => b.value - a.value, // Ordem decrescente
-    description: 'Filtrar por ano de lançamento'
+      ? [{ value: anime.start_season.year, label: anime.start_season.year }]
+      : []
   },
   
   // 6. Filtro por Tipo de Mídia
   {
     id: 'media_type',
-    label: '🎬 Tipo de Mídia',
-    icon: 'film',
+    label: 'Tipo de Mídia',
     extract: anime => {
       if (!anime.media_type) return [];
       const typeName = getMediaTypeName(anime.media_type);
-      return [{ 
-        value: anime.media_type, 
-        label: `${getMediaTypeEmoji(anime.media_type)} ${typeName}` 
-      }];
-    },
-    sort: (a, b) => a.label.localeCompare(b.label),
-    description: 'Tipo de produção (TV, Filme, OVA, etc.)'
+      return [{ value: anime.media_type, label: typeName }];
+    }
   },
   
-  // 7. Filtro por Estúdio (ordenado alfabeticamente)
+  // 7. Filtro por Estúdio
   {
     id: 'studio',
-    label: '🏢 Estúdios',
-    icon: 'building',
+    label: 'Estúdio',
     extract: anime => anime.studios?.map(s => ({ 
       value: s.name, 
-      label: `🎨 ${s.name}` 
-    })) || [],
-    sort: (a, b) => a.label.localeCompare(b.label),
-    description: 'Selecione um ou mais estúdios',
-    isMultiSelect: true,
-    searchable: true
+      label: s.name 
+    })) || []
   }
 ];
 
-// Constantes para ordenação
-const SEASON_ORDER = ['winter', 'spring', 'summer', 'fall'];
-
-// Funções auxiliares melhoradas
+// Funções auxiliares para formatar os valores
 function getCountryName(code) {
   const countries = {
-    'JP': 'Japão', 'CN': 'China', 'KR': 'Coreia', 'US': 'EUA',
-    'FR': 'França', 'DE': 'Alemanha', 'IT': 'Itália', 'ES': 'Espanha',
-    'GB': 'Reino Unido', 'RU': 'Rússia', 'BR': 'Brasil'
+    'JP': 'Japão',
+    'CN': 'China',
+    'KR': 'Coreia do Sul',
+    'US': 'Estados Unidos',
+    'FR': 'França',
+    'DE': 'Alemanha',
+    'IT': 'Itália',
+    'ES': 'Espanha',
+    'GB': 'Reino Unido',
+    'RU': 'Rússia',
+    'BR': 'Brasil'
   };
   return countries[code] || code;
 }
 
-function getFlagEmoji(countryCode) {
-  const flagOffsets = {
-    'JP': '🇯🇵', 'CN': '🇨🇳', 'KR': '🇰🇷', 'US': '🇺🇸',
-    'FR': '🇫🇷', 'DE': '🇩🇪', 'IT': '🇮🇹', 'ES': '🇪🇸',
-    'GB': '🇬🇧', 'RU': '🇷🇺', 'BR': '🇧🇷'
-  };
-  return flagOffsets[countryCode] || '🌐';
-}
-
 function getSeasonName(season) {
   const seasons = {
-    'winter': 'Inverno', 'spring': 'Primavera',
-    'summer': 'Verão', 'fall': 'Outono'
+    'winter': 'Inverno',
+    'spring': 'Primavera',
+    'summer': 'Verão',
+    'fall': 'Outono'
   };
   return seasons[season] || season;
 }
 
-function getSeasonEmoji(season) {
-  const emojis = {
-    'winter': '❄️', 'spring': '🌸',
-    'summer': '☀️', 'fall': '🍂'
-  };
-  return emojis[season] || '📅';
-}
-
 function getMediaTypeName(type) {
   const types = {
-    'tv': 'Série TV', 'movie': 'Filme',
-    'ova': 'OVA', 'ona': 'ONA',
-    'special': 'Especial', 'music': 'Clipe Musical'
+    'tv': 'TV',
+    'movie': 'Filme',
+    'ova': 'OVA',
+    'ona': 'ONA',
+    'special': 'Especial',
+    'music': 'Música'
   };
   return types[type] || type;
-}
-
-function getMediaTypeEmoji(type) {
-  const emojis = {
-    'tv': '📺', 'movie': '🎬',
-    'ova': '📼', 'ona': '🖥️',
-    'special': '🎁', 'music': '🎵'
-  };
-  return emojis[type] || '🎞️';
-}
-
-function getGenreEmoji(genre) {
-  const emojis = {
-    'Action': '💥', 'Adventure': '🌍',
-    'Comedy': '😂', 'Drama': '🎭',
-    'Fantasy': '🦄', 'Horror': '👻',
-    'Mystery': '🕵️', 'Romance': '💘',
-    'Sci-Fi': '🚀', 'Slice of Life': '🏡',
-    'Sports': '⚽', 'Supernatural': '🔮',
-    'Thriller': '🔪', 'Harem': '👨👧👧'
-  };
-  return emojis[genre] || '🏷️';
 }
 
 export function applyFilters(animes, filters) {
@@ -178,7 +123,7 @@ export function applyFilters(animes, filters) {
       
       switch(key) {
         case 'category':
-          // Implementar no componente conforme a lógica de categorias
+          // Este filtro precisa ser implementado no componente pai
           return true;
         
         case 'nationality':
