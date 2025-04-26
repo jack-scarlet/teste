@@ -8,7 +8,7 @@ import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
 const HOME_PAGE_DISPLAY_COUNT = 24;
-const HISTORY_GENRE = 'history';
+const HISTORY_KEY = 'history';
 
 // Estado global
 let allAnimes = [];
@@ -40,42 +40,30 @@ const getCurrentFilters = () => {
 
   try {
     // Carrega dados
-    const rawData = await fetchAnimeData();
-    console.log('Dados brutos recebidos:', rawData);
+    const response = await fetchAnimeData();
+    console.log('Resposta completa da API:', response);
 
-    // Processa estrutura de dados
-    let historyAnime = null;
+    // Extrai os animes principais e o history
+    allAnimes = Array.isArray(response) ? response : response.animes || [];
+    const historyAnime = response[HISTORY_KEY]?.[0];
     
-    // Caso 1: Dados com propriedade history separada
-    if (rawData && rawData.history && Array.isArray(rawData.history)) {
-      console.log('Estrutura com history separado detectada');
-      historyAnime = rawData.history[0];
-      allAnimes = Array.isArray(rawData.animes) ? rawData.animes : [];
-      
-      // Garante que o history anime esteja na lista principal
-      if (historyAnime && !allAnimes.some(a => a.id === historyAnime.id)) {
-        allAnimes.unshift(historyAnime);
-      }
-    } 
-    // Caso 2: Array simples
-    else if (Array.isArray(rawData)) {
-      console.log('Estrutura de array simples detectada');
-      allAnimes = rawData;
-      historyAnime = allAnimes.find(anime => 
-        anime.genres?.some(g => g.name.toLowerCase().includes(HISTORY_GENRE))
-      );
-    } 
-    // Caso 3: Estrutura inválida
-    else {
-      throw new Error('Formato de dados inválido');
-    }
-
     console.log('Total de animes:', allAnimes.length);
-    console.log('Anime history encontrado:', historyAnime);
+    console.log('Anime history:', historyAnime);
+
+    // Verifica se o history anime existe na lista principal
+    if (historyAnime) {
+      const existsInMainList = allAnimes.some(a => a.id === historyAnime.id);
+      console.log('History anime existe na lista principal?', existsInMainList);
+      
+      if (!existsInMainList) {
+        allAnimes.unshift(historyAnime); // Adiciona no início se não existir
+        console.log('History anime adicionado à lista principal');
+      }
+    }
 
     // Página inicial - Lógica especial
     if (isHomePage) {
-      // Filtra animes não-history
+      // Filtra animes não-history (por ID)
       const nonHistoryAnimes = historyAnime
         ? allAnimes.filter(anime => anime.id !== historyAnime.id)
         : [...allAnimes];
@@ -84,15 +72,16 @@ const getCurrentFilters = () => {
       const randomCount = Math.min(23, nonHistoryAnimes.length);
       const randomAnimes = getRandomItems(nonHistoryAnimes, randomCount);
 
-      // Combina os resultados
+      // Combina os resultados (history primeiro se existir)
       filteredAnimes = historyAnime
         ? [historyAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
         : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
 
-      console.log('Lista final:', {
+      console.log('Lista final para renderização:', {
         total: filteredAnimes.length,
         primeiro: filteredAnimes[0]?.title,
-        historyPresente: filteredAnimes.some(a => a.id === historyAnime?.id)
+        historyId: historyAnime?.id,
+        historyPresente: historyAnime ? filteredAnimes[0]?.id === historyAnime.id : false
       });
 
       // Renderização
@@ -130,13 +119,13 @@ const getCurrentFilters = () => {
       renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
     }
   } catch (error) {
-    console.error('Erro crítico:', error);
+    console.error('Erro ao carregar dados:', error);
     document.getElementById('animeGrid').innerHTML = `
       <div class="error-message">
         <i class="fas fa-exclamation-triangle"></i>
         <h3>Erro ao carregar conteúdo</h3>
         <p>${error.message}</p>
-        <button onclick="window.location.reload()">Recarregar</button>
+        <button onclick="window.location.reload()">Recarregar Página</button>
       </div>
     `;
   }
@@ -161,12 +150,10 @@ if (import.meta.env?.MODE === 'development') {
   window._anitsuDebug = {
     getData: () => ({ allAnimes, filteredAnimes }),
     reload: async () => {
-      allAnimes = await fetchAnimeData();
-      console.log('Dados recarregados');
+      const newData = await fetchAnimeData();
+      console.log('Dados recarregados:', newData);
+      return newData;
     },
-    findHistory: () => allAnimes.find(a => 
-      a.id === allAnimes.history?.[0]?.id || 
-      a.genres?.some(g => g.name.toLowerCase().includes(HISTORY_GENRE))
-    )
+    findHistory: () => allAnimes.find(a => a.id === allAnimes.history?.[0]?.id)
   };
 }
