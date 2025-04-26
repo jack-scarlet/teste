@@ -75,7 +75,7 @@ export const initCloudButton = () => {
     // Recarrega a página após 1 segundo para aplicar as mudanças
     setTimeout(() => {
         window.location.reload();
-    }, 1000);
+    }, 500);
 }
     
     function clearCloudLink() {
