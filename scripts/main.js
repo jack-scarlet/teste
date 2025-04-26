@@ -6,45 +6,6 @@ import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
 
-// Estado global
-let allAnimes = [];
-let filteredAnimes = [];
-const HOME_PAGE_DISPLAY_COUNT = 24; // 1 History + 23 random
-
-// Função para selecionar N itens aleatórios sem repetição
-const getRandomItems = (array, count) => {
-  const shuffled = [...array].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-};
-
-// Verifica se é a página inicial
-const isHomePage = !window.location.pathname.includes('/pages/');
-
-const getCurrentFilters = () => {
-  return FILTER_CONFIG.reduce((acc, { id }) => {
-    const select = document.getElementById(id);
-    if (select) acc[id] = select.value;
-    return acc;
-  }, {});
-};
-
-// Função principal
-(async function initApp() {
-  // 1. Inicialização do DOM
-  initMobileMenu();
-  initFilterToggle();
-  showLoadingSkeleton();
-  initCloudButton();
-
-  // 2. Carregamento de dados
-import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
-import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
-import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
-import { initSearch } from './modules/search.js';
-import { setupIntersectionObserver } from './modules/utils.js';
-import { initCloudButton } from './modules/cloud.js';
-
 // Configurações
 const HOME_PAGE_DISPLAY_COUNT = 24;
 const HISTORY_GENRE = 'history';
