@@ -683,3 +683,29 @@ body {
         gap: 20px;
     }
 }
+
+/* Estilos para o botão Nuvem */
+#cloudButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#cloudButton i {
+    font-size: 1em;
+    transition: none !important;
+}
+
+#cloudButton .button-text {
+    display: inline-block;
+}
+
+/* Estilo quando ativo */
+#cloudButton.active {
+    background-color: #0a4b8c;
+}
+
+#cloudButton.active i {
+    color: #4caf50;
+}
