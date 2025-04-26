@@ -696,3 +696,65 @@ body {
   display: none;
 }
 
+/* Estilo para o container de filtros */
+.filter-dropdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Oculta com transição */
+.filter-dropdown.hidden {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Cada seletor */
+.filter-container {
+  flex: 1 1 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  border-color: #0077ff;
+  outline: none;
+}
+
+/* Botão Filtros */
+#toggleFilter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+#toggleFilter.open i {
+  transform: rotate(180deg);
+}
+
+#toggleFilter i {
+  transition: transform 0.3s ease;
+}
+
+
