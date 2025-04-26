@@ -754,6 +754,47 @@ body {
   transform: rotate(180deg);
 }
 
+.filters-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.botao {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #4e73df;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.botao:hover {
+  background-color: #2e59d9;
+}
+
+.hidden {
+  display: none;
+}
+
+
 #toggleFilter i {
   transition: transform 0.3s ease;
 }
