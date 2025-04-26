@@ -52,26 +52,31 @@ export const initCloudButton = () => {
     }
     
     function saveCloudLink() {
-        const linkInput = document.getElementById('cloudLinkInput').value.trim();
-        const errorElement = document.getElementById('cloudError');
-        
-        if (!linkInput) {
-            errorElement.textContent = 'Por favor, insira um link';
-            errorElement.style.display = 'block';
-            return;
-        }
-        
-        if (!isValidCloudLink(linkInput)) {
-            errorElement.textContent = 'Formato incorreto! Use: https://cloud.anitsu.moe/nextcloud/s/seucodigo';
-            errorElement.style.display = 'block';
-            return;
-        }
-        
-        localStorage.setItem(CLOUD_KEY, linkInput);
-        updateButtonAppearance(linkInput);
-        document.querySelector('.cloud-prompt').remove();
-        showToast('Link da nuvem salvo com sucesso!');
+    const linkInput = document.getElementById('cloudLinkInput').value.trim();
+    const errorElement = document.getElementById('cloudError');
+    
+    if (!linkInput) {
+        errorElement.textContent = 'Por favor, insira um link';
+        errorElement.style.display = 'block';
+        return;
     }
+    
+    if (!isValidCloudLink(linkInput)) {
+        errorElement.textContent = 'Formato incorreto! Use: https://cloud.anitsu.moe/nextcloud/s/seucodigo';
+        errorElement.style.display = 'block';
+        return;
+    }
+    
+    localStorage.setItem(CLOUD_KEY, linkInput);
+    updateButtonAppearance(linkInput);
+    document.querySelector('.cloud-prompt').remove();
+    showToast('Link da nuvem salvo com sucesso!');
+    
+    // Recarrega a página após 1 segundo para aplicar as mudanças
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
     
     function clearCloudLink() {
         localStorage.removeItem(CLOUD_KEY);
