@@ -1,5 +1,3 @@
-
-
 /* Variáveis CSS */
 :root {
     --cor-primaria: #007bff;
@@ -11,7 +9,7 @@
 }
 
 /* Reset e Base */
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -22,10 +20,9 @@ body {
     background-color: var(--cor-fundo);
     color: var(--cor-texto);
     line-height: 1.6;
-    padding: 0;
 }
 
-/* Header Responsivo */
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
@@ -92,10 +89,7 @@ body {
     background-color: var(--cor-secundaria);
 }
 
-/* ================================================== */
-/* NOVOS ESTILOS DOS CARDS (ATUALIZADOS) */
-/* ================================================== */
-
+/* Grid de Animes */
 .anime-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -127,6 +121,12 @@ body {
     display: block;
     width: 100%;
     height: 100%;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.anime-image-link:hover {
+    transform: scale(1.02);
 }
 
 .anime-card img {
@@ -140,13 +140,6 @@ body {
     transform: scale(1.03);
 }
 
-/* Estilo do Título no Topo */
-.anime-title-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    /* Estilo do Título no Topo */
 .anime-title-overlay {
     position: absolute;
     top: 0;
@@ -170,24 +163,6 @@ body {
     text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
-    padding: 12px 10px 20px 10px;
-    color: white;
-    z-index: 2;
-}
-
-.anime-title-overlay span {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.3;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-}
-
-/* Badge de Nacionalidade */
 .anime-badge {
     position: absolute;
     bottom: 10px;
@@ -205,23 +180,10 @@ body {
     gap: 4px;
 }
 
-/* Bandeiras por nacionalidade */
-.anime-badge[data-nat="JP"]::before {
-    content: "🇯🇵";
-}
-.anime-badge[data-nat="CN"]::before {
-    content: "🇨🇳";
-}
-.anime-badge[data-nat="KR"]::before {
-    content: "🇰🇷";
-}
-.anime-badge:not([data-nat])::before {
-    content: "🌐";
-}
-
-/* ================================================== */
-/* FIM DOS NOVOS ESTILOS DOS CARDS */
-/* ================================================== */
+.anime-badge[data-nat="JP"]::before { content: "🇯🇵"; }
+.anime-badge[data-nat="CN"]::before { content: "🇨🇳"; }
+.anime-badge[data-nat="KR"]::before { content: "🇰🇷"; }
+.anime-badge:not([data-nat])::before { content: "🌐"; }
 
 /* Botões */
 .botao {
@@ -242,7 +204,12 @@ body {
 
 .botao-mangas { background-color: #ffd700; color: #333; }
 .botao-desenhos { background-color: #ff8c00; color: white; }
-.botao-nuvem { background-color: #05295e; color: white; }
+.botao-nuvem { 
+    background-color: #05295e; 
+    color: white;
+    margin-left: 8px;
+}
+.botao-nuvem:hover { background-color: #0a4b8c; }
 
 /* Loaders */
 .skeleton-loader {
@@ -257,145 +224,71 @@ body {
     50% { opacity: 0.3; }
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-    .mobile-menu-button {
-        display: block;
-    }
-
-    .main-nav {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background: #222;
-        padding: 1rem;
-        flex-direction: column;
-    }
-
-    .main-nav.visible {
-        display: flex;
-    }
-
-    .anime-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
-    }
-    
-    .anime-title-overlay span {
-        font-size: 12px;
-    }
-    
-    .anime-badge {
-        font-size: 10px;
-        padding: 3px 6px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .anime-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 20px;
-    }
-}
-
-/* Botão de Adicionar */
-.anime-add-button {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--cor-primaria);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  transition: all 0.3s ease;
-}
-
-.anime-add-button:hover {
-  background-color: var(--cor-secundaria);
-  transform: scale(1.1);
-}
-
-.plus-icon {
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1;
-}
-
-/* Estilos do Modal */
+/* Modal */
 .anime-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-  box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
 }
 
 .modal-content {
-  background-color: var(--cor-fundo);
-  border-radius: var(--borda-raio);
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 25px;
-  position: relative;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    background-color: var(--cor-fundo);
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 .close-modal {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 28px;
-  cursor: pointer;
-  color: var(--cor-texto);
-  transition: color 0.3s;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--cor-texto);
+    transition: color 0.3s;
 }
 
 .close-modal:hover {
-  color: var(--cor-primaria);
+    color: var(--cor-primaria);
 }
 
 .modal-header {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .modal-header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: white;
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
 }
 
 .anime-meta {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
 }
 
 .anime-type {
-  background-color: var(--cor-primaria);
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
+    background-color: var(--cor-primaria);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
 }
 
 .anime-type.ova { background-color: #6a5acd; }
@@ -404,99 +297,125 @@ body {
 .anime-type.special { background-color: #8e44ad; }
 
 .anime-nationality {
-  background-color: #34495e;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+    background-color: #34495e;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
 }
 
 .modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
 }
 
 .info-group h4 {
-  margin: 0 0 10px 0;
-  color: var(--cor-primaria);
-  font-size: 1rem;
+    margin: 0 0 10px 0;
+    color: var(--cor-primaria);
+    font-size: 1rem;
 }
 
 .info-group p {
-  margin: 5px 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
+    margin: 5px 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 .genre-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .genre-tag {
-  background-color: rgba(0,0,0,0.3);
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
+    background-color: rgba(0,0,0,0.3);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
 }
 
 .synopsis {
-  line-height: 1.6;
-  text-align: justify;
+    line-height: 1.6;
+    text-align: justify;
 }
 
 .modal-footer {
-  display: flex;
-  gap: 10px;
-  margin-top: 25px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .modal-button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: var(--borda-raio);
-  background-color: var(--cor-primaria);
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s;
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: var(--borda-raio);
+    background-color: var(--cor-primaria);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
 .modal-button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+    opacity: 0.9;
+    transform: translateY(-2px);
 }
 
 .modal-button.watchlist {
-  background-color: #34495e;
+    background-color: #34495e;
 }
 
-@media (max-width: 768px) {
-  .modal-content {
-    padding: 15px;
-  }
-  
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-header h3 {
-    font-size: 1.3rem;
-  }
+.modal-button.open-link {
+    background-color: var(--cor-secundaria);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.modal-button.open-link:hover {
+    background-color: #3d8b40;
+}
 
+/* Botão de Adicionar */
+.anime-add-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: all 0.3s ease;
+}
 
-/* Estilo para o prompt personalizado */
+.anime-add-button:hover {
+    background-color: var(--cor-secundaria);
+    transform: scale(1.1);
+}
+
+.plus-icon {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Cloud Prompt */
 .cloud-prompt {
     position: fixed;
     top: 50%;
@@ -536,119 +455,6 @@ body {
     background-color: var(--cor-secundaria);
 }
 
-/* Adicione ao seu main.css */
-.anime-image-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transition: transform 0.2s ease;
-}
-
-.anime-image-link:hover {
-  transform: scale(1.02);
-}
-
-.anime-card:hover .anime-image-link {
-  z-index: 2;
-}
-
-/* Adicione ao seu main.css */
-.modal-button.open-link {
-  background-color: var(--cor-secundaria);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-button.open-link:hover {
-  background-color: #3d8b40;
-}
-
-/* Estilo para animes indisponíveis */
-.anime-card-container.unavailable {
-  position: relative;
-  cursor: not-allowed;
-}
-
-.unavailable-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #ff6b6b;
-  font-weight: bold;
-  z-index: 2;
-}
-
-.unavailable-overlay i {
-  font-size: 2rem;
-  margin-bottom: 5px;
-}
-
-/* Estilo para a mensagem flutuante */
-.unavailable-toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #d32f2f;
-  color: white;
-  padding: 12px 24px;
-  border-radius: var(--borda-raio);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 1000;
-  animation: slideUp 0.3s ease-out;
-}
-
-.unavailable-toast i {
-  font-size: 1.2rem;
-}
-
-@keyframes slideUp {
-  from {
-    bottom: -50px;
-    opacity: 0;
-  }
-  to {
-    bottom: 30px;
-    opacity: 1;
-  }
-}
-
-/* Adicione isso se já não existir */
-.fade-out {
-  animation: fadeOut 0.5s ease-in forwards;
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-/* No seu main.css, adicione: */
-.botao-nuvem {
-    background-color: #05295e;
-    color: white;
-    margin-left: 8px; /* Espaço entre os botões */
-}
-
-.botao-nuvem:hover {
-    background-color: #0a4b8c;
-}
-
-/* Estilo para as ações do prompt */
 .prompt-actions {
     display: flex;
     gap: 10px;
@@ -683,7 +489,6 @@ body {
     color: white;
 }
 
-/* Mensagem de erro */
 .error-message {
     color: #ff6b6b;
     margin-top: 10px;
@@ -695,108 +500,186 @@ body {
     display: block;
 }
 
-.hidden {
-  display: none;
+/* Animes Indisponíveis */
+.anime-card-container.unavailable {
+    position: relative;
+    cursor: not-allowed;
 }
 
-/* Estilo para o container de filtros */
-.filter-dropdown {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease-in-out;
+.unavailable-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b6b;
+    font-weight: bold;
+    z-index: 2;
 }
 
-/* Oculta com transição */
-.filter-dropdown.hidden {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  opacity: 0;
-  transition: all 0.3s ease-in-out;
+.unavailable-overlay i {
+    font-size: 2rem;
+    margin-bottom: 5px;
 }
 
-/* Cada seletor */
-.filter-container {
-  flex: 1 1 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+.unavailable-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d32f2f;
+    color: white;
+    padding: 12px 24px;
+    border-radius: var(--borda-raio);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
 }
 
-.filter-select {
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  background-color: #fff;
-  transition: border-color 0.2s;
+.unavailable-toast i {
+    font-size: 1.2rem;
 }
 
-.filter-select:focus {
-  border-color: #0077ff;
-  outline: none;
-}
-
-/* Botão Filtros */
-#toggleFilter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-#toggleFilter.open i {
-  transform: rotate(180deg);
-}
-
+/* Filtros */
 .filters-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .filters-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-  background: #f9f9f9;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.botao {
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #4e73df;
-  color: white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s ease;
+.filter-container {
+    flex: 1 1 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.botao:hover {
-  background-color: #2e59d9;
+.filter-select {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+    border-color: #0077ff;
+    outline: none;
+}
+
+#toggleFilter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#toggleFilter i {
+    transition: transform 0.3s ease;
+}
+
+#toggleFilter.open i {
+    transform: rotate(180deg);
+}
+
+/* Animações */
+@keyframes slideUp {
+    from {
+        bottom: -50px;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-in forwards;
 }
 
 .hidden {
-  display: none;
+    display: none;
 }
 
+/* Media Queries */
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: block;
+    }
 
-#toggleFilter i {
-  transition: transform 0.3s ease;
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: #222;
+        padding: 1rem;
+        flex-direction: column;
+    }
+
+    .main-nav.visible {
+        display: flex;
+    }
+
+    .anime-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+    }
+    
+    .anime-title-overlay span {
+        font-size: 12px;
+    }
+    
+    .anime-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .anime-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
 }
