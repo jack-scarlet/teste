@@ -157,11 +157,12 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px; /* Aumenta um pouco o tamanho */
+    font-weight: 700; /* Deixa o texto mais "pesado" */
     line-height: 1.3;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.7); /* Sombra mais forte e espalhada */
 }
+
 
 .anime-badge {
     position: absolute;
