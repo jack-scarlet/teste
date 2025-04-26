@@ -37,7 +37,7 @@ const getCurrentFilters = () => {
   initCloudButton();
 
   // 2. Carregamento de dados
-  import { fetchAnimeData } from './modules/api.js';
+import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
