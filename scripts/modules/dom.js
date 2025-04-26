@@ -21,15 +21,15 @@ export function createEnhancedFilterSelect({
 }) {
   const container = document.createElement('div');
   container.className = 'filter-container';
-  container.id = `${id}-filter`;
+  container.id = ${id}-filter;
   
   const labelElement = document.createElement('label');
   labelElement.htmlFor = id;
-  labelElement.innerHTML = `
+  labelElement.innerHTML = 
     ${label}
     <span class="filter-counter" style="display: none;"></span>
-    ${description ? `<span class="filter-tooltip">ℹ️<span class="tooltip-text">${description}</span></span>` : ''}
-  `;
+    ${description ? <span class="filter-tooltip">ℹ️<span class="tooltip-text">${description}</span></span> : ''}
+  ;
   
   const select = document.createElement('select');
   select.id = id;
@@ -43,7 +43,7 @@ export function createEnhancedFilterSelect({
   // Adiciona opção padrão
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
-  defaultOption.textContent = isMultiSelect ? `Selecione ${label.toLowerCase()}...` : `Todos ${label.toLowerCase()}`;
+  defaultOption.textContent = isMultiSelect ? Selecione ${label.toLowerCase()}... : Todos ${label.toLowerCase()};
   select.appendChild(defaultOption);
   
   // Adiciona opções
@@ -59,7 +59,7 @@ export function createEnhancedFilterSelect({
   if (searchable && options.length > 10) {
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = `Buscar ${label.toLowerCase()}...`;
+    searchInput.placeholder = Buscar ${label.toLowerCase()}...;
     searchInput.className = 'filter-search';
     
     searchInput.addEventListener('input', (e) => {
