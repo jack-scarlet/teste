@@ -1,5 +1,5 @@
 import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, createFilterSelect } from './modules/dom.js';
+import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
@@ -39,6 +39,7 @@ const getCurrentFilters = () => {
 (async function initApp() {
   // 1. Inicialização do DOM
   initMobileMenu();
+  initFilterToggle(); // Inicializa o botão de filtro (mostrar/ocultar)
   showLoadingSkeleton();
   initCloudButton();
 
