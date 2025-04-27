@@ -764,9 +764,3 @@ body {
 .filters-container, #menuCategories {
   display: none;
 }
-
-
-.botao-nuvem.active {
-  background-color: #0056b3;
-  color: white;
-}
