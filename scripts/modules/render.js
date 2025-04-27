@@ -1,17 +1,3 @@
-export function renderAnimeGrid(animes, startIdx = 0, chunkSize = 24) { // Default 24
-  const grid = document.getElementById('animeGrid');
-  grid.innerHTML = ''; // Sempre limpa ao renderizar
-
-  const itemsToRender = animes.slice(startIdx, startIdx + chunkSize);
-  const fragment = document.createDocumentFragment();
-
-  itemsToRender.forEach(anime => {
-    fragment.appendChild(createAnimeCard(anime));
-  });
-
-  grid.appendChild(fragment);
-}
-
 function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
