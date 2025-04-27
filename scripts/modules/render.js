@@ -24,7 +24,7 @@ function createAnimeCard(anime) {
           src="${anime.image}" 
           alt="${anime.title}"
           loading="lazy"
-          onerror="this.src=''"
+          onerror="this.style.display='none'"
         >
         <div class="anime-title-overlay">
           <span>${anime.title}</span>
