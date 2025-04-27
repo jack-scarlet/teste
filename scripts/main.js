@@ -1,4 +1,3 @@
-
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
@@ -9,7 +8,6 @@ import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
 const HOME_PAGE_DISPLAY_COUNT = 24;
-const HISTORY_KEY = 'history';
 
 // Estado global
 let allAnimes = [];
@@ -31,6 +29,40 @@ const getCurrentFilters = () => {
   }, {});
 };
 
+// Processa estrutura complexa do JSON
+const processAnimeData = (data) => {
+  let animeList = [];
+  let historyAnime = null;
+
+  // Caso 1: Dados são um array direto
+  if (Array.isArray(data)) {
+    animeList = [...data];
+    historyAnime = data.find(anime => 
+      anime.genres?.some(g => g.name.toLowerCase().includes('history'))
+    );
+  } 
+  // Caso 2: Dados são objeto com categorias
+  else {
+    // Compila animes de todas as categorias
+    const validCategories = [
+      '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    ];
+
+    validCategories.forEach(category => {
+      if (data[category] && Array.isArray(data[category])) {
+        animeList = [...animeList, ...data[category]];
+      }
+    });
+
+    // Pega anime history
+    historyAnime = data.history?.[0];
+  }
+
+  return { animeList, historyAnime };
+};
+
 // Função principal
 (async function initApp() {
   // Inicialização
@@ -42,25 +74,14 @@ const getCurrentFilters = () => {
   try {
     // Carrega dados
     const response = await fetchAnimeData();
-    console.log('Resposta completa da API:', response);
+    console.log('Estrutura dos dados recebidos:', response);
 
-    // Extrai os animes principais e o history
-    allAnimes = Array.isArray(response) ? response : response.animes || [];
-    const historyAnime = response[HISTORY_KEY]?.[0];
+    // Processa os dados
+    const { animeList, historyAnime } = processAnimeData(response);
+    allAnimes = animeList;
     
     console.log('Total de animes:', allAnimes.length);
     console.log('Anime history:', historyAnime);
-
-    // Verifica se o history anime existe na lista principal
-    if (historyAnime) {
-      const existsInMainList = allAnimes.some(a => a.id === historyAnime.id);
-      console.log('History anime existe na lista principal?', existsInMainList);
-      
-      if (!existsInMainList) {
-        allAnimes.unshift(historyAnime); // Adiciona no início se não existir
-        console.log('History anime adicionado à lista principal');
-      }
-    }
 
     // Página inicial - Lógica especial
     if (isHomePage) {
@@ -78,11 +99,12 @@ const getCurrentFilters = () => {
         ? [historyAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
         : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
 
-      console.log('Lista final para renderização:', {
+      console.log('Lista final:', {
         total: filteredAnimes.length,
         primeiro: filteredAnimes[0]?.title,
         historyId: historyAnime?.id,
-        historyPresente: historyAnime ? filteredAnimes[0]?.id === historyAnime.id : false
+        historyPresente: historyAnime ? filteredAnimes[0]?.id === historyAnime.id : false,
+        sample: filteredAnimes.slice(0, 3).map(a => a.title)
       });
 
       // Renderização
@@ -126,6 +148,7 @@ const getCurrentFilters = () => {
         <i class="fas fa-exclamation-triangle"></i>
         <h3>Erro ao carregar conteúdo</h3>
         <p>${error.message}</p>
+        <small>Verifique o console (F12) para detalhes</small>
         <button onclick="window.location.reload()">Recarregar Página</button>
       </div>
     `;
