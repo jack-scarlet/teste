@@ -166,7 +166,8 @@ function showError(error) {
         lastAnime.isFeatured = true;
       }
 
-      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+      renderAnimeGrid(filteredAnimes, 0, HOME_ANIMES_PER_PAGE);
+
 
     } else {
       setupIntersectionObserver(() => {
@@ -180,7 +181,7 @@ function showError(error) {
 });
 
       filteredAnimes = applyAllFilters(allAnimes);
-      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+      renderAnimeGrid(filteredAnimes, 0, HOME_ANIMES_PER_PAGE);
     }
 
   } catch (error) {
