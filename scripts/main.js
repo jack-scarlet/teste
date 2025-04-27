@@ -1,5 +1,4 @@
 // main.js atualizado
-
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
