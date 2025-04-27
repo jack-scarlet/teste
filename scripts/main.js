@@ -131,7 +131,6 @@ function showError(error) {
 (async function initApp() {
   initMobileMenu();
   initFilterToggle();
-  showLoadingSkeleton();
   initCloudButton();
 
   try {
