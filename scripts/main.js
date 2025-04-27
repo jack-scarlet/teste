@@ -229,7 +229,6 @@ function initMenuButton() {
       icon.classList.replace('fa-times', 'fa-bars');
     }
   });
-}
 
   // Alterna visibilidade do painel ao clicar no botão "Menu"
   menuButton.addEventListener('click', () => {
