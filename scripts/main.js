@@ -1,92 +1,160 @@
-// main.js
 
-// Ajuste dos números de exibição na home
-const HOME_PAGE_DISPLAY_COUNT = 20;
+// main.js atualizado
 
-// Função principal para processar dados
+import { fetchAnimeData } from './modules/api.js';
+import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
+import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
+import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
+import { initSearch } from './modules/search.js';
+import { setupIntersectionObserver } from './modules/utils.js';
+import { initCloudButton } from './modules/cloud.js';
+
+// Configurações
+const HOME_PAGE_DISPLAY_COUNT = 24;
+
+// Estado global
+let allAnimes = [];
+let filteredAnimes = [];
+
+// Funções auxiliares
+const getRandomItems = (array, count) => {
+  const shuffled = [...array].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
+
+const isHomePage = !window.location.pathname.includes('/pages/');
+
+const getCurrentFilters = () => {
+  return FILTER_CONFIG.reduce((acc, { id }) => {
+    const select = document.getElementById(id);
+    if (select) acc[id] = select.value;
+    return acc;
+  }, {});
+};
+
+// Processa estrutura complexa do JSON
 const processAnimeData = (data) => {
   let animeList = [];
-  let historyAnime = null;
+  let lastAnime = null;
 
   if (Array.isArray(data)) {
     animeList = [...data];
-    historyAnime = data.find(anime => 
-      anime.genres?.some(g => g.name.toLowerCase().includes('history'))
-    );
-    if (historyAnime) {
-      animeList = animeList.filter(anime => anime.id !== historyAnime.id);
-    }
+    lastAnime = data[data.length - 1]; // Pega o último item do array
   } else {
-    historyAnime = data.history?.[0];
-
     const validCategories = [
-      '#', 
+      '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
       'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     ];
 
     validCategories.forEach(category => {
-      if (data[category] && Array.isArray(data[category])) {
-        const filteredCategory = historyAnime
-          ? data[category].filter(anime => anime.id !== historyAnime.id)
-          : data[category];
-
-        animeList = [...animeList, ...filteredCategory];
+      if (Array.isArray(data[category])) {
+        animeList = [...animeList, ...data[category]];
       }
     });
+
+    // Pega o último anime da última categoria válida
+    const lastCategory = validCategories[validCategories.length - 1];
+    if (Array.isArray(data[lastCategory]) {
+      lastAnime = data[lastCategory][data[lastCategory].length - 1];
+    }
   }
 
-  return { animeList, historyAnime };
+  return { animeList, lastAnime };
 };
 
-// Função para carregar os animes e renderizar na página
-const loadAnimes = async () => {
+// Função principal
+(async function initApp() {
+  initMobileMenu();
+  initFilterToggle();
+  showLoadingSkeleton();
+  initCloudButton();
+
   try {
-    const response = await fetch('../list/anime_list.json');
-    const data = await response.json();
+    const response = await fetchAnimeData();
+    const { animeList, lastAnime } = processAnimeData(response); // Renomeado para lastAnime
+    allAnimes = animeList;
 
-    const { animeList, historyAnime } = processAnimeData(data);
+    if (isHomePage) {
+      const nonLastAnimes = lastAnime
+        ? allAnimes.filter(anime => anime.id !== lastAnime.id)
+        : [...allAnimes];
 
-    const randomAnimes = animeList.sort(() => Math.random() - 0.5);
+      const randomCount = Math.min(23, nonLastAnimes.length);
+      const randomAnimes = getRandomItems(nonLastAnimes, randomCount);
 
-    const filteredAnimes = historyAnime
-      ? [historyAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
-      : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
+      filteredAnimes = lastAnime
+        ? [lastAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
+        : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
 
-    // Exibe os animes (você deve ter sua função de renderização)
-    renderAnimeCards(filteredAnimes);
+      renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+    } else {
+      // Configura filtros
+      FILTER_CONFIG.forEach(({ id, label, extract, sort }) => {
+        const options = extractUniqueOptions(allAnimes, extract, sort);
+        const select = createFilterSelect(id, label, options);
 
-    // Para debugging
-    window._anitsuDebug = {
-      animeList,
-      historyAnime,
-      randomAnimes,
-      filteredAnimes
-    };
+        select.addEventListener('change', () => {
+          filteredAnimes = applyFilters(allAnimes, getCurrentFilters());
+          renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+        });
+      });
 
+      // Configura busca
+      initSearch(allAnimes, (results) => {
+        filteredAnimes = results;
+        renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+      });
+
+      // Lazy loading
+      setupIntersectionObserver(() => {
+        const currentCount = document.querySelectorAll('.anime-card').length;
+        if (filteredAnimes.length > currentCount) {
+          renderAnimeGrid(filteredAnimes, currentCount, HOME_PAGE_DISPLAY_COUNT);
+        }
+      });
+
+      // Renderização inicial
+      filteredAnimes = [...allAnimes];
+      renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+    }
   } catch (error) {
-    console.error('Erro ao carregar os animes:', error);
-  }
-};
-
-// Função para renderizar os cards (exemplo)
-const renderAnimeCards = (animes) => {
-  const container = document.getElementById('anime-container');
-  container.innerHTML = '';
-
-  animes.forEach(anime => {
-    const card = document.createElement('div');
-    card.className = 'anime-card';
-
-    card.innerHTML = `
-      <img src="${anime.image}" alt="${anime.title}" />
-      <h3>${anime.title}</h3>
-      <a href="${anime.url}">Ver mais</a>
+    console.error('Erro ao carregar dados:', error);
+    document.getElementById('animeGrid').innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Erro ao carregar conteúdo</h3>
+        <p>${error.message}</p>
+        <small>Verifique o console (F12) para detalhes</small>
+        <button onclick="window.location.reload()">Recarregar Página</button>
+      </div>
     `;
+  }
+})();
 
-    container.appendChild(card);
+// Função para extrair opções de filtro
+const extractUniqueOptions = (animes, extractFn, sortFn) => {
+  const options = new Map();
+  animes.forEach(anime => {
+    const items = extractFn(anime) || [];
+    items.forEach(item => {
+      if (!options.has(item.value)) {
+        options.set(item.value, item);
+      }
+    });
   });
+  return Array.from(options.values()).sort(sortFn);
 };
 
-// Inicia o carregamento ao abrir a página
-window.addEventListener('DOMContentLoaded', loadAnimes);
+// Ferramentas de debug
+if (import.meta.env?.MODE === 'development') {
+  window._anitsuDebug = {
+    getData: () => ({ allAnimes, filteredAnimes }),
+    reload: async () => {
+      const newData = await fetchAnimeData();
+      console.log('Dados recarregados:', newData);
+      return newData;
+    },
+    findHistory: () => allAnimes.find(a => a.id === allAnimes.history?.[0]?.id)
+  };
+}
