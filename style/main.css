@@ -713,12 +713,12 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  padding: 16px;
+  gap: 18px;
+  padding: 04px;
   background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
-  height: 124px; /* Para manter 2 linhas (40px botão + 4px gap) */
+  height: 110px; /* Para manter 2 linhas (40px botão + 4px gap) */
   overflow: hidden;
 }
 
