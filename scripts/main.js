@@ -1,3 +1,5 @@
+// main.js atualizado
+
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
@@ -34,16 +36,13 @@ const processAnimeData = (data) => {
   let animeList = [];
   let historyAnime = null;
 
-  // Caso 1: Dados são um array direto
   if (Array.isArray(data)) {
     animeList = [...data];
-    historyAnime = data.find(anime => 
+    // Se for array, procura manualmente um anime com gênero "history"
+    historyAnime = data.find(anime =>
       anime.genres?.some(g => g.name.toLowerCase().includes('history'))
     );
-  } 
-  // Caso 2: Dados são objeto com categorias
-  else {
-    // Compila animes de todas as categorias
+  } else {
     const validCategories = [
       '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -51,13 +50,15 @@ const processAnimeData = (data) => {
     ];
 
     validCategories.forEach(category => {
-      if (data[category] && Array.isArray(data[category])) {
+      if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
       }
     });
 
-    // Pega anime history
-    historyAnime = data.history?.[0];
+    // Se existir, pega o primeiro anime da categoria "history"
+    if (Array.isArray(data.history) && data.history.length > 0) {
+      historyAnime = data.history[0];
+    }
   }
 
   return { animeList, historyAnime };
@@ -65,36 +66,29 @@ const processAnimeData = (data) => {
 
 // Função principal
 (async function initApp() {
-  // Inicialização
   initMobileMenu();
   initFilterToggle();
   showLoadingSkeleton();
   initCloudButton();
 
   try {
-    // Carrega dados
     const response = await fetchAnimeData();
     console.log('Estrutura dos dados recebidos:', response);
 
-    // Processa os dados
     const { animeList, historyAnime } = processAnimeData(response);
     allAnimes = animeList;
-    
+
     console.log('Total de animes:', allAnimes.length);
     console.log('Anime history:', historyAnime);
 
-    // Página inicial - Lógica especial
     if (isHomePage) {
-      // Filtra animes não-history (por ID)
       const nonHistoryAnimes = historyAnime
         ? allAnimes.filter(anime => anime.id !== historyAnime.id)
         : [...allAnimes];
 
-      // Seleciona aleatórios
       const randomCount = Math.min(23, nonHistoryAnimes.length);
       const randomAnimes = getRandomItems(nonHistoryAnimes, randomCount);
 
-      // Combina os resultados (history primeiro se existir)
       filteredAnimes = historyAnime
         ? [historyAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
         : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
@@ -107,16 +101,13 @@ const processAnimeData = (data) => {
         sample: filteredAnimes.slice(0, 3).map(a => a.title)
       });
 
-      // Renderização
       renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
-    } 
-    // Outras páginas - Lógica normal
-    else {
+    } else {
       // Configura filtros
       FILTER_CONFIG.forEach(({ id, label, extract, sort }) => {
         const options = extractUniqueOptions(allAnimes, extract, sort);
         const select = createFilterSelect(id, label, options);
-        
+
         select.addEventListener('change', () => {
           filteredAnimes = applyFilters(allAnimes, getCurrentFilters());
           renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
