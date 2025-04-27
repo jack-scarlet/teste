@@ -3,7 +3,7 @@
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
-import { renderAnimeGrid,  } from './modules/render.js';
+import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
@@ -131,6 +131,7 @@ function showError(error) {
 (async function initApp() {
   initMobileMenu();
   initFilterToggle();
+  showLoadingSkeleton();
   initCloudButton();
 
   try {
