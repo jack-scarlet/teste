@@ -201,6 +201,8 @@ if (import.meta.env?.MODE === 'development') {
 function initMenuButton() {
   const menuButton = document.getElementById('menuButton');
   const menuCategories = document.getElementById('menuCategories');
+  const filterButton = document.getElementById('toggleFilter');
+  const filtersContainer = document.getElementById('filters');
   
   const categories = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -212,28 +214,63 @@ function initMenuButton() {
     button.textContent = category;
     button.addEventListener('click', () => {
       filterByCategory(category);
-      menuCategories.classList.remove('visible'); // fecha o painel depois de clicar
+      closeAllPanels();
     });
     menuCategories.appendChild(button);
   });
 
-  // Alterna visibilidade do painel ao clicar no botão "Menu"
+  // Função para fechar todos os painéis
+  function closeAllPanels() {
+    menuCategories.classList.remove('visible');
+    filtersContainer.classList.remove('visible');
+    menuButton.classList.remove('active');
+    filterButton.classList.remove('active');
+  }
+
+  // Alterna visibilidade do painel de menu
   menuButton.addEventListener('click', () => {
-    menuCategories.classList.toggle('visible');
-    
-    // Opcional: muda o ícone quando aberto/fechado
-    const icon = menuButton.querySelector('i');
     if (menuCategories.classList.contains('visible')) {
-      icon.classList.replace('fa-bars', 'fa-times');
+      closeAllPanels();
     } else {
-      icon.classList.replace('fa-times', 'fa-bars');
+      closeAllPanels();
+      menuCategories.classList.add('visible');
+      menuButton.classList.add('active');
+      
+      // Muda ícone
+      const icon = menuButton.querySelector('i');
+      icon.classList.replace('fa-bars', 'fa-times');
     }
   });
 
-  // Alterna visibilidade do painel ao clicar no botão "Menu"
-  menuButton.addEventListener('click', () => {
-    menuCategories.classList.toggle('hidden');
+  // Alterna visibilidade do painel de filtros
+  filterButton.addEventListener('click', () => {
+    if (filtersContainer.classList.contains('visible')) {
+      closeAllPanels();
+    } else {
+      closeAllPanels();
+      filtersContainer.classList.add('visible');
+      filterButton.classList.add('active');
+      
+      // Muda ícone
+      const icon = filterButton.querySelector('i');
+      icon.classList.replace('fa-filter', 'fa-times');
+    }
   });
+
+  // Fecha painéis ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!menuButton.contains(e.target) && !menuCategories.contains(e.target) &&
+        !filterButton.contains(e.target) && !filtersContainer.contains(e.target)) {
+      closeAllPanels();
+      resetIcons();
+    }
+  });
+
+  // Função para resetar ícones
+  function resetIcons() {
+    menuButton.querySelector('i').classList.replace('fa-times', 'fa-bars');
+    filterButton.querySelector('i').classList.replace('fa-times', 'fa-filter');
+  }
 }
 
 // Filtra animes por categoria/letra
