@@ -1,6 +1,6 @@
 // main.js atualizado
 import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, createEnhancedFilterSelect, initFilterToggle } from './modules/dom.js';
+import { initMobileMenu, createEnhancedFilterSelect } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
