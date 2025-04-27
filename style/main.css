@@ -753,14 +753,3 @@ body {
 .filters-container {
   margin-bottom: 2px;
 }
-
-/* Ajustes para duas linhas automáticas */
-#menuCategories {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Mantenha todos os estilos anteriores e adicione: */
-.filters-container, #menuCategories {
-  display: none;
-}
