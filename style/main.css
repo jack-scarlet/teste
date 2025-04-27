@@ -709,31 +709,32 @@ body {
 }
 
 /* Estilo para o painel de categorias */
-
 #menuCategories {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1px;
-  padding: 4px;
-  background-color: #f8f9fa; /* Fundo clarinho */
+  gap: 4px; /* Reduzi de 10px para 4px */
+  padding: 8px; /* Reduzi de 15px para 8px */
+  background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
+  height: 84px; /* Para manter 2 linhas (40px botão + 4px gap) */
+  overflow: hidden;
 }
 
-    .categoria-botao {
-      flex: 1 1 40px;
-      min-width: 40px;
-      max-width: 60px;
-      height: 40px;
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.2s;
-    }
+.categoria-botao {
+  flex: 0 0 60px; /* Mudei para largura fixa */
+  height: 40px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin: 0; /* Garante que não há margens extras */
+}
 
 
 /* Hover nos botões */
