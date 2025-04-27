@@ -759,3 +759,17 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* Mantenha todos os estilos anteriores e adicione: */
+.filters-container, #menuCategories {
+  display: none;
+}
+
+.filters-container.visible, #menuCategories.visible {
+  display: block; /* Ou flex, conforme necessário */
+}
+
+.botao-nuvem.active {
+  background-color: #0056b3;
+  color: white;
+}
