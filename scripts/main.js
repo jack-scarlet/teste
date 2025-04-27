@@ -191,10 +191,10 @@ function showError(error) {
     } else {
   // Página de categorias: configura busca e lazy loading
   initSearch(allAnimes, (searchResults) => {
-    // Aplica os filtros ATUAIS aos resultados da busca
-    filteredAnimes = applyAllFilters(searchResults); 
-    currentPage = 1;
-    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  filteredAnimes = applyAllFilters(searchResults); // Aplica filtros aos resultados da busca
+  currentPage = 1;
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+});
     
     // Mostra feedback visual (opcional)
     const searchInput = document.getElementById('searchInput');
