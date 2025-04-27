@@ -144,15 +144,16 @@ function showError(error) {
 
     // Sempre inicializar busca
     initSearch(allAnimes, (searchResults) => {
-      filteredAnimes = applyAllFilters(searchResults);
-      currentPage = 1;
-      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  filteredAnimes = applyAllFilters(searchResults);
+  currentPage = 1;
+  renderAnimeGrid(filteredAnimes, 0, filteredAnimes.length); // ✅ Todos os resultados
 
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput.value.trim()) {
-        document.getElementById('searchStatus').textContent = `Exibindo ${filteredAnimes.length} resultados`;
-      }
-    });
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput.value.trim()) {
+    document.getElementById('searchStatus').textContent =
+      `Exibindo ${filteredAnimes.length} resultados`;
+  }
+});
 
     if (isHomePage) {
       const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.id !== lastAnime.id) : [...allAnimes];
