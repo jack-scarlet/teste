@@ -189,36 +189,36 @@ function showError(error) {
 
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     } else {
-      // Página de categorias: configura busca e lazy loading
-      initSearch(allAnimes, (results) => {
-        filteredAnimes = results;
-        currentPage = 1;
-        renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-      });
-
-// 4. Configuração da busca
-  initSearch(allAnimes, (results) => {
-    filteredAnimes = results;
-    currentChunk = 0;
-    renderAnimeGrid(filteredAnimes, 0, CHUNK_SIZE);
+  // Página de categorias: configura busca e lazy loading
+  initSearch(allAnimes, (searchResults) => {
+    // Aplica os filtros ATUAIS aos resultados da busca
+    filteredAnimes = applyAllFilters(searchResults); 
+    currentPage = 1;
+    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+    
+    // Mostra feedback visual (opcional)
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput.value.trim()) {
+      document.getElementById('searchStatus').textContent = 
+        `Exibindo ${filteredAnimes.length} resultados`;
+    }
   });
 
-      // Lazy loading
-      setupIntersectionObserver(() => {
-        if (isFetching) return;
-        
-        const currentCount = document.querySelectorAll('.anime-card').length;
-        if (currentCount < filteredAnimes.length) {
-          isFetching = true;
-          renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
-          isFetching = false;
-        }
-      });
-
-      // Renderização inicial
-      filteredAnimes = [...allAnimes];
-      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  // Lazy loading
+  setupIntersectionObserver(() => {
+    if (isFetching) return;
+    const currentCount = document.querySelectorAll('.anime-card').length;
+    if (currentCount < filteredAnimes.length) {
+      isFetching = true;
+      renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
+      isFetching = false;
     }
+  });
+
+  // Renderização inicial (com filtros aplicados)
+  filteredAnimes = applyAllFilters(allAnimes);
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+}
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     showError(error);
