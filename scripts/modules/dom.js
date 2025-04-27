@@ -44,9 +44,10 @@ export function initFilterToggle() {
   const toggleButton = document.getElementById('toggleFilter');
   const filterContainer = document.getElementById('filters');
 
-  toggleButton.addEventListener('click', () => {
-    // Alterna a visibilidade da div de filtros
-    filterContainer.classList.toggle('hidden');
-  });
+  if (toggleButton && filterContainer) {
+    toggleButton.addEventListener('click', () => {
+      filterContainer.classList.toggle('hidden');
+    });
+  }
 }
 
