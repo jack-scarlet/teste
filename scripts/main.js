@@ -196,6 +196,13 @@ function showError(error) {
         renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
       });
 
+// 4. Configuração da busca
+  initSearch(allAnimes, (results) => {
+    filteredAnimes = results;
+    currentChunk = 0;
+    renderAnimeGrid(filteredAnimes, 0, CHUNK_SIZE);
+  });
+
       // Lazy loading
       setupIntersectionObserver(() => {
         if (isFetching) return;
