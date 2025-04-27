@@ -720,6 +720,10 @@ body {
   margin-top: 10px;
 }
 
+.hidden {
+  display: none;
+}
+
 /* Estilo dos botões de categorias */
 .categoria-botao {
   flex: 1 1 40px; /* ocupa largura mínima */
