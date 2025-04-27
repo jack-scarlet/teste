@@ -710,20 +710,29 @@ body {
 
 /* Estilo para o painel de categorias */
 #menuCategories {
-  display: flex;
+  display: none; /* Oculta por padrão */
   flex-wrap: wrap;
   justify-content: center;
   gap: 18px;
-  padding: 04px;
+  padding: 4px;
   background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
-  height: 110px; /* Para manter 2 linhas (40px botão + 4px gap) */
+  height: 110px;
   overflow: hidden;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Classe para mostrar o menu */
+#menuCategories.visible {
+  display: flex;
+}
+
+/* Restante do seu CSS permanece igual */
 .categoria-botao {
-  flex: 0 0 60px; /* Mudei para largura fixa */
+  flex: 0 0 60px;
   height: 40px;
   background-color: #007bff;
   color: white;
@@ -733,11 +742,9 @@ body {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
-  margin: 0; /* Garante que não há margens extras */
+  margin: 0;
 }
 
-
-/* Hover nos botões */
 .categoria-botao:hover {
   background-color: #0056b3;
   transform: translateY(-2px);
