@@ -1,19 +1,31 @@
-// main.js atualizado
+// main.js - Versão atualizada baseada na lógica do site antigo
 
 import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
-import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
+import { initMobileMenu, createFilterSelect } from './modules/dom.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
-import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
-const HOME_PAGE_DISPLAY_COUNT = 24;
+const ANIMES_PER_PAGE = 24;
+const INITIAL_RANDOM_COUNT = 23; // 23 aleatórios + 1 destaque
 
 // Estado global
 let allAnimes = [];
 let filteredAnimes = [];
+let currentPage = 1;
+let isFetching = false;
+
+// Filtros
+const currentFilters = {
+  category: null,
+  nationality: null,
+  genre: null,
+  season: null,
+  year: null,
+  mediaType: null,
+  studio: null
+};
 
 // Funções auxiliares
 const getRandomItems = (array, count) => {
@@ -23,23 +35,16 @@ const getRandomItems = (array, count) => {
 
 const isHomePage = !window.location.pathname.includes('/pages/');
 
-const getCurrentFilters = () => {
-  return FILTER_CONFIG.reduce((acc, { id }) => {
-    const select = document.getElementById(id);
-    if (select) acc[id] = select.value;
-    return acc;
-  }, {});
-};
-
-// Processa estrutura complexa do JSON
+// Processa estrutura do JSON
 const processAnimeData = (data) => {
   let animeList = [];
   let lastAnime = null;
 
   if (Array.isArray(data)) {
     animeList = [...data];
-    lastAnime = data[data.length - 1]; // Pega o último item do array
+    lastAnime = data[data.length - 1];
   } else {
+    // Extrai animes de todas as categorias válidas
     const validCategories = [
       '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
@@ -47,14 +52,14 @@ const processAnimeData = (data) => {
     ];
 
     validCategories.forEach(category => {
-      if (Array.isArray(data[category])) {  // <-- Remova este parêntese extra
+      if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
       }
     });
 
-    // Pega o último anime da última categoria válida
+    // Pega o último anime da última categoria
     const lastCategory = validCategories[validCategories.length - 1];
-    if (Array.isArray(data[lastCategory]) {
+    if (Array.isArray(data[lastCategory]) && data[lastCategory].length > 0) {
       lastAnime = data[lastCategory][data[lastCategory].length - 1];
     }
   }
@@ -62,98 +67,199 @@ const processAnimeData = (data) => {
   return { animeList, lastAnime };
 };
 
+// Aplica todos os filtros
+const applyAllFilters = (animes) => {
+  return animes.filter(anime => {
+    const matchesCategory = !currentFilters.category || 
+      (anime.category && anime.category === currentFilters.category);
+    
+    const matchesNationality = !currentFilters.nationality || 
+      anime.nat === currentFilters.nationality;
+    
+    const matchesGenre = !currentFilters.genre || 
+      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+    
+    const matchesSeason = !currentFilters.season || 
+      (anime.start_season && anime.start_season.season === currentFilters.season);
+    
+    const matchesYear = !currentFilters.year || 
+      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+    
+    const matchesMediaType = !currentFilters.mediaType || 
+      anime.media_type === currentFilters.mediaType;
+    
+    const matchesStudio = !currentFilters.studio || 
+      (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
+
+    return matchesCategory && matchesNationality && matchesGenre && 
+           matchesSeason && matchesYear && matchesMediaType && matchesStudio;
+  });
+};
+
 // Função principal
 (async function initApp() {
   initMobileMenu();
-  initFilterToggle();
   showLoadingSkeleton();
-  initCloudButton();
 
   try {
     const response = await fetchAnimeData();
-    const { animeList, lastAnime } = processAnimeData(response); // Renomeado para lastAnime
+    const { animeList, lastAnime } = processAnimeData(response);
     allAnimes = animeList;
 
     if (isHomePage) {
-      const nonLastAnimes = lastAnime
+      // Página inicial: último anime + 23 aleatórios
+      const nonLastAnimes = lastAnime 
         ? allAnimes.filter(anime => anime.id !== lastAnime.id)
         : [...allAnimes];
 
-      const randomCount = Math.min(23, nonLastAnimes.length);
-      const randomAnimes = getRandomItems(nonLastAnimes, randomCount);
+      const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
+      
+      filteredAnimes = lastAnime 
+        ? [lastAnime, ...randomAnimes]
+        : randomAnimes;
 
-      filteredAnimes = lastAnime
-        ? [lastAnime, ...randomAnimes].slice(0, HOME_PAGE_DISPLAY_COUNT)
-        : randomAnimes.slice(0, HOME_PAGE_DISPLAY_COUNT);
+      // Destaca o último anime
+      if (lastAnime) {
+        lastAnime.isFeatured = true;
+      }
 
-      renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     } else {
-      // Configura filtros
-      FILTER_CONFIG.forEach(({ id, label, extract, sort }) => {
-        const options = extractUniqueOptions(allAnimes, extract, sort);
-        const select = createFilterSelect(id, label, options);
-
-        select.addEventListener('change', () => {
-          filteredAnimes = applyFilters(allAnimes, getCurrentFilters());
-          renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
-        });
-      });
-
+      // Página de categorias: configura filtros
+      setupFilters();
+      
       // Configura busca
       initSearch(allAnimes, (results) => {
         filteredAnimes = results;
-        renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+        currentPage = 1;
+        renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
       });
 
       // Lazy loading
       setupIntersectionObserver(() => {
+        if (isFetching) return;
+        
         const currentCount = document.querySelectorAll('.anime-card').length;
-        if (filteredAnimes.length > currentCount) {
-          renderAnimeGrid(filteredAnimes, currentCount, HOME_PAGE_DISPLAY_COUNT);
+        if (currentCount < filteredAnimes.length) {
+          isFetching = true;
+          renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
+          isFetching = false;
         }
       });
 
       // Renderização inicial
       filteredAnimes = [...allAnimes];
-      renderAnimeGrid(filteredAnimes, 0, HOME_PAGE_DISPLAY_COUNT);
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     }
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
-    document.getElementById('animeGrid').innerHTML = `
-      <div class="error-message">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>Erro ao carregar conteúdo</h3>
-        <p>${error.message}</p>
-        <small>Verifique o console (F12) para detalhes</small>
-        <button onclick="window.location.reload()">Recarregar Página</button>
-      </div>
-    `;
+    showError(error);
   }
 })();
 
-// Função para extrair opções de filtro
-const extractUniqueOptions = (animes, extractFn, sortFn) => {
-  const options = new Map();
-  animes.forEach(anime => {
-    const items = extractFn(anime) || [];
-    items.forEach(item => {
-      if (!options.has(item.value)) {
-        options.set(item.value, item);
-      }
-    });
+// Configura os filtros
+function setupFilters() {
+  // Nacionalidade
+  createFilterSelect('nationality', 'Nacionalidade', [
+    { value: '', label: 'Todos' },
+    { value: 'JP', label: 'Japão' },
+    { value: 'CN', label: 'China' },
+    { value: 'KR', label: 'Coreia' }
+  ], value => {
+    currentFilters.nationality = value || null;
+    updateFilters();
   });
-  return Array.from(options.values()).sort(sortFn);
-};
+
+  // Gêneros
+  const genres = [...new Set(allAnimes.flatMap(a => 
+    a.genres ? a.genres.map(g => g.name) : []
+  ))].sort();
+
+  createFilterSelect('genre', 'Gênero', [
+    { value: '', label: 'Todos os gêneros' },
+    ...genres.map(g => ({ value: g, label: g }))
+  ], value => {
+    currentFilters.genre = value || null;
+    updateFilters();
+  });
+
+  // Temporadas
+  createFilterSelect('season', 'Temporada', [
+    { value: '', label: 'Todas as temporadas' },
+    { value: 'spring', label: 'Primavera' },
+    { value: 'summer', label: 'Verão' },
+    { value: 'fall', label: 'Outono' },
+    { value: 'winter', label: 'Inverno' }
+  ], value => {
+    currentFilters.season = value || null;
+    updateFilters();
+  });
+
+  // Anos
+  const years = [...new Set(allAnimes.map(a => 
+    a.start_season?.year
+  ).filter(Boolean))].sort((a, b) => b - a);
+
+  createFilterSelect('year', 'Ano', [
+    { value: '', label: 'Todos os anos' },
+    ...years.map(y => ({ value: y, label: y }))
+  ], value => {
+    currentFilters.year = value || null;
+    updateFilters();
+  });
+
+  // Tipos de mídia
+  const mediaTypes = [...new Set(allAnimes.map(a => a.media_type))].filter(Boolean);
+
+  createFilterSelect('mediaType', 'Tipo de Mídia', [
+    { value: '', label: 'Todos os tipos' },
+    ...mediaTypes.map(m => ({ value: m, label: m.toUpperCase() }))
+  ], value => {
+    currentFilters.mediaType = value || null;
+    updateFilters();
+  });
+
+  // Estúdios
+  const studios = [...new Set(allAnimes.flatMap(a => 
+    a.studios ? a.studios.map(s => s.name) : []
+  ))].sort();
+
+  createFilterSelect('studio', 'Estúdio', [
+    { value: '', label: 'Todos os estúdios' },
+    ...studios.map(s => ({ value: s, label: s }))
+  ], value => {
+    currentFilters.studio = value || null;
+    updateFilters();
+  });
+}
+
+// Atualiza os filtros e re-renderiza
+function updateFilters() {
+  filteredAnimes = applyAllFilters(allAnimes);
+  currentPage = 1;
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+}
+
+// Mostra mensagem de erro
+function showError(error) {
+  document.getElementById('animeGrid').innerHTML = `
+    <div class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Erro ao carregar conteúdo</h3>
+      <p>${error.message}</p>
+      <button onclick="window.location.reload()">Recarregar Página</button>
+    </div>
+  `;
+}
 
 // Ferramentas de debug
 if (import.meta.env?.MODE === 'development') {
   window._anitsuDebug = {
-    getData: () => ({ allAnimes, filteredAnimes }),
+    getData: () => ({ allAnimes, filteredAnimes, currentFilters }),
     reload: async () => {
       const newData = await fetchAnimeData();
       console.log('Dados recarregados:', newData);
       return newData;
-    },
-    findHistory: () => allAnimes.find(a => a.id === allAnimes.history?.[0]?.id)
+    }
   };
 }
