@@ -72,39 +72,39 @@ const processAnimeData = (data) => {
 // Aplica todos os filtros
 const applyAllFilters = (animes) => {
   return animes.filter(anime => {
-    const matchesCategory = !currentFilters.category || 
+    const matchesCategory = !currentFilters.category ||
       (anime.category && anime.category === currentFilters.category);
-    
-    const matchesNationality = !currentFilters.nationality || 
+
+    const matchesNationality = !currentFilters.nationality ||
       anime.nat === currentFilters.nationality;
-    
-    const matchesGenre = !currentFilters.genre || 
+
+    const matchesGenre = !currentFilters.genre ||
       (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
-    
-    const matchesSeason = !currentFilters.season || 
+
+    const matchesSeason = !currentFilters.season ||
       (anime.start_season && anime.start_season.season === currentFilters.season);
-    
-    const matchesYear = !currentFilters.year || 
+
+    const matchesYear = !currentFilters.year ||
       (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
-    
-    const matchesMediaType = !currentFilters.mediaType || 
+
+    const matchesMediaType = !currentFilters.mediaType ||
       anime.media_type === currentFilters.mediaType;
-    
-    const matchesStudio = !currentFilters.studio || 
+
+    const matchesStudio = !currentFilters.studio ||
       (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
 
-    return matchesCategory && matchesNationality && matchesGenre && 
-           matchesSeason && matchesYear && matchesMediaType && matchesStudio;
+    return matchesCategory && matchesNationality && matchesGenre &&
+      matchesSeason && matchesYear && matchesMediaType && matchesStudio;
   });
 };
 
 // Renderiza filtros baseados em FILTER_CONFIG
 function renderFiltersFromConfig() {
   const filtersContainer = document.getElementById('filters');
-  
+
   FILTER_CONFIG.forEach(filter => {
     const options = extractUniqueOptions(allAnimes, filter);
-    
+
     const select = document.createElement('select');
     select.id = filter.id;
     select.className = 'filter-select';
@@ -112,17 +112,17 @@ function renderFiltersFromConfig() {
       <option value="">Todos ${filter.label.toLowerCase()}</option>
       ${options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
     `;
-    
+
     select.addEventListener('change', () => {
       currentFilters[filter.id] = select.value || null;
       updateFilters();
     });
-    
+
     const container = document.createElement('div');
     container.className = 'filter-container';
     container.innerHTML = `<label for="${filter.id}">${filter.label}</label>`;
     container.appendChild(select);
-    
+
     filtersContainer.appendChild(container);
   });
 }
@@ -133,7 +133,9 @@ function extractUniqueOptions(animes, filterConfig) {
     const extracted = filterConfig.extract(anime);
     extracted.forEach(opt => options.add(JSON.stringify(opt)));
   });
-  return Array.from(options).map(opt => JSON.parse(opt)).sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
+  return Array.from(options)
+    .map(opt => JSON.parse(opt))
+    .sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
 }
 
 // Atualiza os filtros e re-renderiza
@@ -167,58 +169,57 @@ function showError(error) {
     const { animeList, lastAnime } = processAnimeData(response);
     allAnimes = animeList;
 
-    // Renderiza os filtros baseados em FILTER_CONFIG
+    // Renderiza os filtros
     renderFiltersFromConfig();
 
     if (isHomePage) {
       // Página inicial: último anime + 23 aleatórios
-      const nonLastAnimes = lastAnime 
+      const nonLastAnimes = lastAnime
         ? allAnimes.filter(anime => anime.id !== lastAnime.id)
         : [...allAnimes];
 
       const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
-      
-      filteredAnimes = lastAnime 
+
+      filteredAnimes = lastAnime
         ? [lastAnime, ...randomAnimes]
         : randomAnimes;
 
-      // Destaca o último anime
       if (lastAnime) {
         lastAnime.isFeatured = true;
       }
 
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     } else {
-  // Página de categorias: configura busca e lazy loading
-  initSearch(allAnimes, (searchResults) => {
-  // Aplica os filtros ATUAIS aos resultados da busca
-  filteredAnimes = applyAllFilters(searchResults); 
-  currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-  
-    // Mostra feedback visual (opcional)
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput.value.trim()) {
-      document.getElementById('searchStatus').textContent = 
-        `Exibindo ${filteredAnimes.length} resultados`;
-    }
-  });
+      // Página de categorias: configura busca e lazy loading
+      initSearch(allAnimes, (searchResults) => {
+        // Aplica filtros aos resultados da busca
+        filteredAnimes = applyAllFilters(searchResults);
+        currentPage = 1;
+        renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 
-  // Lazy loading
-  setupIntersectionObserver(() => {
-    if (isFetching) return;
-    const currentCount = document.querySelectorAll('.anime-card').length;
-    if (currentCount < filteredAnimes.length) {
-      isFetching = true;
-      renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
-      isFetching = false;
-    }
-  });
+        // Feedback de busca
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput.value.trim()) {
+          document.getElementById('searchStatus').textContent =
+            `Exibindo ${filteredAnimes.length} resultados`;
+        }
+      });
 
-  // Renderização inicial (com filtros aplicados)
-  filteredAnimes = applyAllFilters(allAnimes);
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-}
+      // Lazy loading
+      setupIntersectionObserver(() => {
+        if (isFetching) return;
+        const currentCount = document.querySelectorAll('.anime-card').length;
+        if (currentCount < filteredAnimes.length) {
+          isFetching = true;
+          renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
+          isFetching = false;
+        }
+      });
+
+      // Renderização inicial
+      filteredAnimes = applyAllFilters(allAnimes);
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+    }
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     showError(error);
