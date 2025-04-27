@@ -760,10 +760,7 @@ body {
   margin-right: auto;
 }
 
-/* Mantenha todos os estilos anteriores e adicione: */
-.filters-container, #menuCategories {
-  display: none;
-}
+
 
 .filters-container.visible, #menuCategories.visible {
   display: block; /* Ou flex, conforme necessário */
