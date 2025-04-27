@@ -133,7 +133,6 @@ const applyAllFilters = (animes) => {
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     } else {
       // Página de categorias: configura filtros
-      setupFilters();
       
       // Configura busca
       initSearch(allAnimes, (results) => {
