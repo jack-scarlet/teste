@@ -114,7 +114,7 @@ function extractUniqueOptions(animes, filterConfig) {
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
   currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, 30); // Carrega 30 + Lazy Loading de 30
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 }
 
 function showError(error) {
@@ -133,6 +133,7 @@ function showError(error) {
   initFilterToggle();
   showLoadingSkeleton();
   initCloudButton();
+  initMenuButton();
 
   try {
     const response = await fetchAnimeData();
@@ -195,4 +196,51 @@ if (import.meta.env?.MODE === 'development') {
       return newData;
     }
   };
+}
+
+function initMenuButton() {
+  const menuButton = document.getElementById('menuButton');
+  const menuCategories = document.getElementById('menuCategories');
+  
+  const categories = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+  // Cria botões para cada categoria
+  categories.forEach(category => {
+    const button = document.createElement('button');
+    button.className = 'botao categoria-botao';
+    button.textContent = category;
+    button.addEventListener('click', () => {
+      filterByCategory(category);
+      menuCategories.classList.add('hidden'); // fecha o painel depois de clicar
+    });
+    menuCategories.appendChild(button);
+  });
+
+  // Alterna visibilidade do painel ao clicar no botão "Menu"
+  menuButton.addEventListener('click', () => {
+    menuCategories.classList.toggle('hidden');
+  });
+}
+
+// Filtra animes por categoria/letra
+function filterByCategory(category) {
+  filteredAnimes = allAnimes.filter(anime => {
+    if (!anime.title) return false;
+    const firstChar = anime.title.trim()[0].toUpperCase();
+    if (category === '#') {
+      // Para "#" pega títulos que NÃO começam com letras (0-9, símbolos)
+      return !/^[A-Z]/.test(firstChar);
+    } else {
+      return firstChar === category;
+    }
+  });
+
+  currentPage = 1;
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+
+  const searchStatus = document.getElementById('searchStatus');
+  if (searchStatus) {
+    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${category}"`;
+  }
 }
