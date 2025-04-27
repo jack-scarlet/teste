@@ -195,8 +195,7 @@ function showError(error) {
   filteredAnimes = applyAllFilters(searchResults); 
   currentPage = 1;
   renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-});
-    
+  
     // Mostra feedback visual (opcional)
     const searchInput = document.getElementById('searchInput');
     if (searchInput.value.trim()) {
