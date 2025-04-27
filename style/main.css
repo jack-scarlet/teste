@@ -748,12 +748,12 @@ body {
 
 /* Melhorando o espaço entre os itens */
 .filters-container {
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 /* Ajustes para duas linhas automáticas */
 #menuCategories {
-  max-width: 600px; /* Limita o tamanho para quebrar em linhas */
+  max-width: 400px; /* Limita o tamanho para quebrar em linhas */
   margin-left: auto;
   margin-right: auto;
 }
