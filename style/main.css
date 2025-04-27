@@ -713,12 +713,12 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px; /* Reduzi de 10px para 4px */
-  padding: 12px; /* Reduzi de 15px para 8px */
+  gap: 15px;
+  padding: 08px;
   background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
-  height: 84px; /* Para manter 2 linhas (40px botão + 4px gap) */
+  height: 124px; /* Para manter 2 linhas (40px botão + 4px gap) */
   overflow: hidden;
 }
 
