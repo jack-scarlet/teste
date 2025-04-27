@@ -102,7 +102,7 @@ const applyAllFilters = (animes) => {
 // Função principal
 (async function initApp() {
   initMobileMenu();
-  initFilterToggle();
+  createEnhancedFilterSelect();
   showLoadingSkeleton();
   initCloudButton();
 
