@@ -1,10 +1,14 @@
-// main.js - Versão atualizada baseada na lógica do site antigo
+// main.js atualizado
 
 import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, createFilterSelect } from './modules/dom.js';
+import { initMobileMenu, createFilterSelect, initFilterToggle } from './modules/dom.js';
+import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
+import { initCloudButton } from './modules/cloud.js';
+
+
 
 // Configurações
 const ANIMES_PER_PAGE = 24;
@@ -99,7 +103,10 @@ const applyAllFilters = (animes) => {
 // Função principal
 (async function initApp() {
   initMobileMenu();
+  initFilterToggle();
   showLoadingSkeleton();
+  initCloudButton();
+
 
   try {
     const response = await fetchAnimeData();
