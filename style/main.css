@@ -714,7 +714,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px; /* Reduzi de 10px para 4px */
-  padding: 8px; /* Reduzi de 15px para 8px */
+  padding: 12px; /* Reduzi de 15px para 8px */
   background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
