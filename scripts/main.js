@@ -114,7 +114,7 @@ function extractUniqueOptions(animes, filterConfig) {
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
   currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  renderAnimeGrid(filteredAnimes, 0, filteredAnimes.length); // ✅ Todos os resultados
 }
 
 function showError(error) {
@@ -230,7 +230,6 @@ function filterByCategory(category) {
     if (!anime.title) return false;
     const firstChar = anime.title.trim()[0].toUpperCase();
     if (category === '#') {
-      // Para "#" pega títulos que NÃO começam com letras (0-9, símbolos)
       return !/^[A-Z]/.test(firstChar);
     } else {
       return firstChar === category;
@@ -238,7 +237,7 @@ function filterByCategory(category) {
   });
 
   currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  renderAnimeGrid(filteredAnimes, 0, filteredAnimes.length); // ✅ Todos os resultados
 
   const searchStatus = document.getElementById('searchStatus');
   if (searchStatus) {
