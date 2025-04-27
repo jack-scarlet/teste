@@ -709,36 +709,35 @@ body {
 }
 
 /* Estilo para o painel de categorias */
-
 #menuCategories {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   padding: 15px;
-  background-color: #f8f9fa; /* Fundo clarinho */
+  background-color: #f8f9fa;
   border-radius: 12px;
   margin-top: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 90px; /* Altura fixa para 2 linhas (40px botão + 10px gap) */
+  align-content: flex-start; /* Alinha as linhas no topo */
 }
 
-    .categoria-botao {
-      flex: 1 1 40px;
-      min-width: 40px;
-      max-width: 60px;
-      height: 40px;
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.2s;
-    }
+.categoria-botao {
+  flex: 0 0 60px; /* Não cresce, não encolhe, largura fixa de 60px */
+  height: 40px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
 
-    .categoria-botao:hover {
-      background-color: #0056b3;
-      transform: translateY(-2px);
-    }
 
 /* Hover nos botões */
 .categoria-botao:hover {
