@@ -203,19 +203,33 @@ function initMenuButton() {
   const menuCategories = document.getElementById('menuCategories');
   
   const categories = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   // Cria botões para cada categoria
   categories.forEach(category => {
     const button = document.createElement('button');
-    button.className = 'botao categoria-botao';
+    button.className = 'categoria-botao';
     button.textContent = category;
     button.addEventListener('click', () => {
       filterByCategory(category);
-      menuCategories.classList.add('hidden'); // fecha o painel depois de clicar
+      menuCategories.classList.remove('visible'); // fecha o painel depois de clicar
     });
     menuCategories.appendChild(button);
   });
+
+  // Alterna visibilidade do painel ao clicar no botão "Menu"
+  menuButton.addEventListener('click', () => {
+    menuCategories.classList.toggle('visible');
+    
+    // Opcional: muda o ícone quando aberto/fechado
+    const icon = menuButton.querySelector('i');
+    if (menuCategories.classList.contains('visible')) {
+      icon.classList.replace('fa-bars', 'fa-times');
+    } else {
+      icon.classList.replace('fa-times', 'fa-bars');
+    }
+  });
+}
 
   // Alterna visibilidade do painel ao clicar no botão "Menu"
   menuButton.addEventListener('click', () => {
