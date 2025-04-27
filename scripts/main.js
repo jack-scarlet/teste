@@ -1,14 +1,12 @@
 // main.js atualizado
 
 import { fetchAnimeData } from './modules/api.js';
-import { initMobileMenu, initFilterToggle, } from './modules/dom.js';
+import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
-
-
 
 // Configurações
 const ANIMES_PER_PAGE = 24;
@@ -100,32 +98,7 @@ const applyAllFilters = (animes) => {
   });
 };
 
-// Função principal
-(async function initApp() {
-  initMobileMenu();
-  initFilterToggle();
-  showLoadingSkeleton();
-  initCloudButton();
-
-
-  try {
-  const response = await fetchAnimeData();
-  const { animeList, lastAnime } = processAnimeData(response);
-  allAnimes = animeList;
-
-  // Renderiza os filtros baseados em FILTER_CONFIG
-  renderFiltersFromConfig();
-
-  if (isHomePage) {
-    // ... resto do código da página inicial
-  } else {
-    // ... resto do código das outras páginas
-  }
-} catch (error) {
-  console.error('Erro ao carregar dados:', error);
-  showError(error);
-}
-
+// Renderiza filtros baseados em FILTER_CONFIG
 function renderFiltersFromConfig() {
   const filtersContainer = document.getElementById('filters');
   
@@ -163,82 +136,6 @@ function extractUniqueOptions(animes, filterConfig) {
   return Array.from(options).map(opt => JSON.parse(opt)).sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
 }
 
-// Configura os filtros
-function setupFilters() {
-  // Nacionalidade
-  createFilterSelect('nationality', 'Nacionalidade', [
-    { value: '', label: 'Todos' },
-    { value: 'JP', label: 'Japão' },
-    { value: 'CN', label: 'China' },
-    { value: 'KR', label: 'Coreia' }
-  ], value => {
-    currentFilters.nationality = value || null;
-    updateFilters();
-  });
-
-  // Gêneros
-  const genres = [...new Set(allAnimes.flatMap(a => 
-    a.genres ? a.genres.map(g => g.name) : []
-  ))].sort();
-
-  createFilterSelect('genre', 'Gênero', [
-    { value: '', label: 'Todos os gêneros' },
-    ...genres.map(g => ({ value: g, label: g }))
-  ], value => {
-    currentFilters.genre = value || null;
-    updateFilters();
-  });
-
-  // Temporadas
-  createFilterSelect('season', 'Temporada', [
-    { value: '', label: 'Todas as temporadas' },
-    { value: 'spring', label: 'Primavera' },
-    { value: 'summer', label: 'Verão' },
-    { value: 'fall', label: 'Outono' },
-    { value: 'winter', label: 'Inverno' }
-  ], value => {
-    currentFilters.season = value || null;
-    updateFilters();
-  });
-
-  // Anos
-  const years = [...new Set(allAnimes.map(a => 
-    a.start_season?.year
-  ).filter(Boolean))].sort((a, b) => b - a);
-
-  createFilterSelect('year', 'Ano', [
-    { value: '', label: 'Todos os anos' },
-    ...years.map(y => ({ value: y, label: y }))
-  ], value => {
-    currentFilters.year = value || null;
-    updateFilters();
-  });
-
-  // Tipos de mídia
-  const mediaTypes = [...new Set(allAnimes.map(a => a.media_type))].filter(Boolean);
-
-  createFilterSelect('mediaType', 'Tipo de Mídia', [
-    { value: '', label: 'Todos os tipos' },
-    ...mediaTypes.map(m => ({ value: m, label: m.toUpperCase() }))
-  ], value => {
-    currentFilters.mediaType = value || null;
-    updateFilters();
-  });
-
-  // Estúdios
-  const studios = [...new Set(allAnimes.flatMap(a => 
-    a.studios ? a.studios.map(s => s.name) : []
-  ))].sort();
-
-  createFilterSelect('studio', 'Estúdio', [
-    { value: '', label: 'Todos os estúdios' },
-    ...studios.map(s => ({ value: s, label: s }))
-  ], value => {
-    currentFilters.studio = value || null;
-    updateFilters();
-  });
-}
-
 // Atualiza os filtros e re-renderiza
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
@@ -257,6 +154,69 @@ function showError(error) {
     </div>
   `;
 }
+
+// Função principal
+(async function initApp() {
+  initMobileMenu();
+  initFilterToggle();
+  showLoadingSkeleton();
+  initCloudButton();
+
+  try {
+    const response = await fetchAnimeData();
+    const { animeList, lastAnime } = processAnimeData(response);
+    allAnimes = animeList;
+
+    // Renderiza os filtros baseados em FILTER_CONFIG
+    renderFiltersFromConfig();
+
+    if (isHomePage) {
+      // Página inicial: último anime + 23 aleatórios
+      const nonLastAnimes = lastAnime 
+        ? allAnimes.filter(anime => anime.id !== lastAnime.id)
+        : [...allAnimes];
+
+      const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
+      
+      filteredAnimes = lastAnime 
+        ? [lastAnime, ...randomAnimes]
+        : randomAnimes;
+
+      // Destaca o último anime
+      if (lastAnime) {
+        lastAnime.isFeatured = true;
+      }
+
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+    } else {
+      // Página de categorias: configura busca e lazy loading
+      initSearch(allAnimes, (results) => {
+        filteredAnimes = results;
+        currentPage = 1;
+        renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+      });
+
+      // Lazy loading
+      setupIntersectionObserver(() => {
+        if (isFetching) return;
+        
+        const currentCount = document.querySelectorAll('.anime-card').length;
+        if (currentCount < filteredAnimes.length) {
+          isFetching = true;
+          renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
+          isFetching = false;
+        }
+      });
+
+      // Renderização inicial
+      filteredAnimes = [...allAnimes];
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    showError(error);
+  }
+})();
 
 // Ferramentas de debug
 if (import.meta.env?.MODE === 'development') {
