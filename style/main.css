@@ -709,22 +709,51 @@ body {
 }
 
 /* Estilo para o painel de categorias */
+
 #menuCategories {
-  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: #f8f9fa; /* Fundo clarinho */
   border-radius: 12px;
-  margin: 10px auto;
-  max-width: 600px;
-  height: 90px; /* Altura calculada para 2 linhas (40px botão + 10px gap) */
-  overflow: hidden; /* Esconde itens que vazarem (opcional) */
+  margin-top: 10px;
 }
 
-.categoria-botao {
-  flex: 0 0 60px; /* Largura fixa (sem crescer/encolher) */
-  height: 40px;
-  /* Restante do seu estilo... */
+    .categoria-botao {
+      flex: 1 1 40px;
+      min-width: 40px;
+      max-width: 60px;
+      height: 40px;
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .categoria-botao:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+/* Hover nos botões */
+.categoria-botao:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Melhorando o espaço entre os itens */
+.filters-container {
+  margin-bottom: 20px;
+}
+
+/* Ajustes para duas linhas automáticas */
+#menuCategories {
+  max-width: 600px; /* Limita o tamanho para quebrar em linhas */
+  margin-left: auto;
+  margin-right: auto;
 }
