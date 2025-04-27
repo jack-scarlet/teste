@@ -709,20 +709,6 @@ body {
 }
 
 /* Estilo para o painel de categorias */
-    #menuCategories {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 15px;
-      background-color: #f8f9fa;
-      border-radius: 12px;
-      margin-top: 10px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
     .categoria-botao {
       flex: 1 1 40px;
       min-width: 40px;
@@ -743,10 +729,4 @@ body {
       transform: translateY(-2px);
     }
 
-    .filters-container {
-      margin-bottom: 20px;
-    }
 
-    .hidden {
-      display: none;
-    }
