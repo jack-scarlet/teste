@@ -11,34 +11,72 @@ export function initMobileMenu() {
   });
 }
 
-export function createFilterSelect(id, label, options) {
-  const container = document.getElementById('filterDropdown');
+export function createEnhancedFilterSelect({
+  id,
+  label,
+  options,
+  isMultiSelect = false,
+  searchable = false,
+  description = ''
+}) {
+  const container = document.createElement('div');
+  container.className = 'filter-container';
+  container.id = `${id}-filter`;
   
-  const wrapper = document.createElement('div');
-  wrapper.className = 'filter-group';
-
   const labelElement = document.createElement('label');
   labelElement.htmlFor = id;
-  labelElement.textContent = label;
-
+  labelElement.innerHTML = `
+    ${label}
+    <span class="filter-counter" style="display: none;"></span>
+    ${description ? `<span class="filter-tooltip">ℹ️<span class="tooltip-text">${description}</span></span>` : ''}
+  `;
+  
   const select = document.createElement('select');
   select.id = id;
+  select.className = 'filter-select';
   
+  if (isMultiSelect) {
+    select.multiple = true;
+    select.size = Math.min(options.length, 5); // Mostra até 5 opções
+  }
+  
+  // Adiciona opção padrão
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
-  defaultOption.textContent = `Todos ${label.toLowerCase()}`;
+  defaultOption.textContent = isMultiSelect ? `Selecione ${label.toLowerCase()}...` : `Todos ${label.toLowerCase()}`;
   select.appendChild(defaultOption);
-
+  
+  // Adiciona opções
   options.forEach(option => {
     const optElement = document.createElement('option');
     optElement.value = option.value;
     optElement.textContent = option.label;
+    optElement.dataset.emoji = option.label.match(/^\p{Emoji}/u)?.[0] || ''; // Preserva emoji
     select.appendChild(optElement);
   });
-
-  wrapper.appendChild(labelElement);
-  wrapper.appendChild(select);
-  container.appendChild(wrapper);
-
+  
+  // Adiciona busca se necessário
+  if (searchable && options.length > 10) {
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = `Buscar ${label.toLowerCase()}...`;
+    searchInput.className = 'filter-search';
+    
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      Array.from(select.options).forEach(opt => {
+        if (opt.value === '') return;
+        const matches = opt.textContent.toLowerCase().includes(searchTerm);
+        opt.style.display = matches ? '' : 'none';
+      });
+    });
+    
+    container.appendChild(searchInput);
+  }
+  
+  container.appendChild(labelElement);
+  container.appendChild(select);
+  
+  document.querySelector('.filters-section').appendChild(container);
   return select;
 }
