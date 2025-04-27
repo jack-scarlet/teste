@@ -109,11 +109,14 @@ const applyAllFilters = (animes) => {
 
 
   try {
-    const response = await fetchAnimeData();
-    const { animeList, lastAnime } = processAnimeData(response);
-    allAnimes = animeList;
+     const response = await fetchAnimeData();
+  const { animeList, lastAnime } = processAnimeData(response);
+  allAnimes = animeList;
 
-    if (isHomePage) {
+  // Adicione esta linha ↓
+  setupFilters(); // Inicializa os elementos de filtro
+
+  if (isHomePage) {
       // Página inicial: último anime + 23 aleatórios
       const nonLastAnimes = lastAnime 
         ? allAnimes.filter(anime => anime.id !== lastAnime.id)
