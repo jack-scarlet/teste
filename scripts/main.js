@@ -9,8 +9,7 @@ import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
-const HOME_ANIMES_PER_PAGE = 24;
-const OTHER_ANIMES_PER_PAGE = 30;
+const ANIMES_PER_PAGE = 24;
 const INITIAL_RANDOM_COUNT = 23;
 
 // Estado global
@@ -115,7 +114,7 @@ function extractUniqueOptions(animes, filterConfig) {
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
   currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, OTHER_ANIMES_PER_PAGE);
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 }
 
 function showError(error) {
@@ -134,7 +133,6 @@ function showError(error) {
   initFilterToggle();
   showLoadingSkeleton();
   initCloudButton();
-  initMenuButton();
 
   try {
     const response = await fetchAnimeData();
@@ -144,17 +142,16 @@ function showError(error) {
     renderFiltersFromConfig();
 
     // Sempre inicializar busca
-  initSearch(allAnimes, (searchResults) => {
-  filteredAnimes = applyAllFilters(searchResults);
-  currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, OTHER_ANIMES_PER_PAGE);
+    initSearch(allAnimes, (searchResults) => {
+      filteredAnimes = applyAllFilters(searchResults);
+      currentPage = 1;
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput.value.trim()) {
-    document.getElementById('searchStatus').textContent =
-      `Exibindo ${filteredAnimes.length} resultados`;
-  }
-});
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput.value.trim()) {
+        document.getElementById('searchStatus').textContent = `Exibindo ${filteredAnimes.length} resultados`;
+      }
+    });
 
     if (isHomePage) {
       const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.id !== lastAnime.id) : [...allAnimes];
@@ -166,22 +163,21 @@ function showError(error) {
         lastAnime.isFeatured = true;
       }
 
-      renderAnimeGrid(filteredAnimes, 0, HOME_ANIMES_PER_PAGE);
-
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 
     } else {
       setupIntersectionObserver(() => {
-  if (isFetching) return;
-  const currentCount = document.querySelectorAll('.anime-card').length;
-  if (currentCount < filteredAnimes.length) {
-    isFetching = true;
-    renderAnimeGrid(filteredAnimes, currentCount, OTHER_ANIMES_PER_PAGE);
-    isFetching = false;
-  }
-});
+        if (isFetching) return;
+        const currentCount = document.querySelectorAll('.anime-card').length;
+        if (currentCount < filteredAnimes.length) {
+          isFetching = true;
+          renderAnimeGrid(filteredAnimes, currentCount, ANIMES_PER_PAGE);
+          isFetching = false;
+        }
+      });
 
       filteredAnimes = applyAllFilters(allAnimes);
-      renderAnimeGrid(filteredAnimes, 0, HOME_ANIMES_PER_PAGE);
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     }
 
   } catch (error) {
@@ -199,61 +195,4 @@ if (import.meta.env?.MODE === 'development') {
       return newData;
     }
   };
-}
-
-function initMenuButton() {
-  const menuButton = document.getElementById('menuButton');
-  const menuCategories = document.getElementById('menuCategories');
-  
-  const categories = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
-  // Cria botões para cada categoria
-  categories.forEach(category => {
-    const button = document.createElement('button');
-    button.className = 'botao categoria-botao';
-    button.textContent = category;
-    button.addEventListener('click', () => {
-      filterByCategory(category);
-      menuCategories.classList.add('hidden'); // fecha o painel depois de clicar
-    });
-    menuCategories.appendChild(button);
-  });
-
-  // Alterna visibilidade do painel ao clicar no botão "Menu"
-  menuButton.addEventListener('click', () => {
-    menuCategories.classList.toggle('hidden');
-  });
-}
-
-// Filtra animes por categoria/letra
-function filterByCategory(category) {
-  filteredAnimes = allAnimes.filter(anime => {
-    if (!anime.title) return false;
-    const firstChar = anime.title.trim()[0].toUpperCase();
-    if (category === '#') {
-      return !/^[A-Z]/.test(firstChar);
-    } else {
-      return firstChar === category;
-    }
-  });
-
-  currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, OTHER_ANIMES_PER_PAGE);
-
-  const searchStatus = document.getElementById('searchStatus');
-  if (searchStatus) {
-    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria \"${category}\"`;
-  }
-
-  // Ativar lazy loading para o menu também
-  setupIntersectionObserver(() => {
-    if (isFetching) return;
-    const currentCount = document.querySelectorAll('.anime-card').length;
-    if (currentCount < filteredAnimes.length) {
-      isFetching = true;
-      renderAnimeGrid(filteredAnimes, currentCount, OTHER_ANIMES_PER_PAGE);
-      isFetching = false;
-    }
-  });
 }
