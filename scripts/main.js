@@ -133,6 +133,7 @@ function showError(error) {
   initFilterToggle();
   showLoadingSkeleton();
   initCloudButton();
+  initMenuButton();
 
   try {
     const response = await fetchAnimeData();
