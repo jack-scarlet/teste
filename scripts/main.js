@@ -1,4 +1,4 @@
-// main.js atualizado
+// main.js corrigido para funcionar a busca na home
 
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
@@ -10,7 +10,7 @@ import { initCloudButton } from './modules/cloud.js';
 
 // Configurações
 const ANIMES_PER_PAGE = 24;
-const INITIAL_RANDOM_COUNT = 23; // 23 aleatórios + 1 destaque
+const INITIAL_RANDOM_COUNT = 23;
 
 // Estado global
 let allAnimes = [];
@@ -37,7 +37,6 @@ const getRandomItems = (array, count) => {
 
 const isHomePage = !window.location.pathname.includes('/pages/');
 
-// Processa estrutura do JSON
 const processAnimeData = (data) => {
   let animeList = [];
   let lastAnime = null;
@@ -46,20 +45,12 @@ const processAnimeData = (data) => {
     animeList = [...data];
     lastAnime = data[data.length - 1];
   } else {
-    // Extrai animes de todas as categorias válidas
-    const validCategories = [
-      '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-    ];
-
+    const validCategories = ['#','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
     validCategories.forEach(category => {
       if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
       }
     });
-
-    // Pega o último anime da última categoria
     const lastCategory = validCategories[validCategories.length - 1];
     if (Array.isArray(data[lastCategory]) && data[lastCategory].length > 0) {
       lastAnime = data[lastCategory][data[lastCategory].length - 1];
@@ -69,36 +60,20 @@ const processAnimeData = (data) => {
   return { animeList, lastAnime };
 };
 
-// Aplica todos os filtros
 const applyAllFilters = (animes) => {
   return animes.filter(anime => {
-    const matchesCategory = !currentFilters.category ||
-      (anime.category && anime.category === currentFilters.category);
+    const matchesCategory = !currentFilters.category || (anime.category && anime.category === currentFilters.category);
+    const matchesNationality = !currentFilters.nationality || anime.nat === currentFilters.nationality;
+    const matchesGenre = !currentFilters.genre || (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+    const matchesSeason = !currentFilters.season || (anime.start_season && anime.start_season.season === currentFilters.season);
+    const matchesYear = !currentFilters.year || (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+    const matchesMediaType = !currentFilters.mediaType || anime.media_type === currentFilters.mediaType;
+    const matchesStudio = !currentFilters.studio || (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
 
-    const matchesNationality = !currentFilters.nationality ||
-      anime.nat === currentFilters.nationality;
-
-    const matchesGenre = !currentFilters.genre ||
-      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
-
-    const matchesSeason = !currentFilters.season ||
-      (anime.start_season && anime.start_season.season === currentFilters.season);
-
-    const matchesYear = !currentFilters.year ||
-      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
-
-    const matchesMediaType = !currentFilters.mediaType ||
-      anime.media_type === currentFilters.mediaType;
-
-    const matchesStudio = !currentFilters.studio ||
-      (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
-
-    return matchesCategory && matchesNationality && matchesGenre &&
-      matchesSeason && matchesYear && matchesMediaType && matchesStudio;
+    return matchesCategory && matchesNationality && matchesGenre && matchesSeason && matchesYear && matchesMediaType && matchesStudio;
   });
 };
 
-// Renderiza filtros baseados em FILTER_CONFIG
 function renderFiltersFromConfig() {
   const filtersContainer = document.getElementById('filters');
 
@@ -133,19 +108,15 @@ function extractUniqueOptions(animes, filterConfig) {
     const extracted = filterConfig.extract(anime);
     extracted.forEach(opt => options.add(JSON.stringify(opt)));
   });
-  return Array.from(options)
-    .map(opt => JSON.parse(opt))
-    .sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
+  return Array.from(options).map(opt => JSON.parse(opt)).sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
 }
 
-// Atualiza os filtros e re-renderiza
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
   currentPage = 1;
   renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 }
 
-// Mostra mensagem de erro
 function showError(error) {
   document.getElementById('animeGrid').innerHTML = `
     <div class="error-message">
@@ -157,7 +128,6 @@ function showError(error) {
   `;
 }
 
-// Função principal
 (async function initApp() {
   initMobileMenu();
   initFilterToggle();
@@ -169,43 +139,33 @@ function showError(error) {
     const { animeList, lastAnime } = processAnimeData(response);
     allAnimes = animeList;
 
-    // Renderiza os filtros
     renderFiltersFromConfig();
 
-    if (isHomePage) {
-      // Página inicial: último anime + 23 aleatórios
-      const nonLastAnimes = lastAnime
-        ? allAnimes.filter(anime => anime.id !== lastAnime.id)
-        : [...allAnimes];
+    // Sempre inicializar busca
+    initSearch(allAnimes, (searchResults) => {
+      filteredAnimes = applyAllFilters(searchResults);
+      currentPage = 1;
+      renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput.value.trim()) {
+        document.getElementById('searchStatus').textContent = `Exibindo ${filteredAnimes.length} resultados`;
+      }
+    });
+
+    if (isHomePage) {
+      const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.id !== lastAnime.id) : [...allAnimes];
       const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
 
-      filteredAnimes = lastAnime
-        ? [lastAnime, ...randomAnimes]
-        : randomAnimes;
+      filteredAnimes = lastAnime ? [lastAnime, ...randomAnimes] : randomAnimes;
 
       if (lastAnime) {
         lastAnime.isFeatured = true;
       }
 
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+
     } else {
-      // Página de categorias: configura busca e lazy loading
-      initSearch(allAnimes, (searchResults) => {
-        // Aplica filtros aos resultados da busca
-        filteredAnimes = applyAllFilters(searchResults);
-        currentPage = 1;
-        renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-
-        // Feedback de busca
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput.value.trim()) {
-          document.getElementById('searchStatus').textContent =
-            `Exibindo ${filteredAnimes.length} resultados`;
-        }
-      });
-
-      // Lazy loading
       setupIntersectionObserver(() => {
         if (isFetching) return;
         const currentCount = document.querySelectorAll('.anime-card').length;
@@ -216,17 +176,16 @@ function showError(error) {
         }
       });
 
-      // Renderização inicial
       filteredAnimes = applyAllFilters(allAnimes);
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     }
+
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     showError(error);
   }
 })();
 
-// Ferramentas de debug
 if (import.meta.env?.MODE === 'development') {
   window._anitsuDebug = {
     getData: () => ({ allAnimes, filteredAnimes, currentFilters }),
