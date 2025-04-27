@@ -188,7 +188,7 @@ function showError(error) {
       }
 
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-    else {
+    } else {
   // Página de categorias: configura busca e lazy loading
   initSearch(allAnimes, (searchResults) => {
     // Aplica os filtros ATUAIS aos resultados da busca
@@ -218,7 +218,7 @@ function showError(error) {
   // Renderização inicial (com filtros aplicados)
   filteredAnimes = applyAllFilters(allAnimes);
   renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-} // Faltava o fechamento aqui
+}
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     showError(error);
