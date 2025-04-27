@@ -707,3 +707,50 @@ body {
 #cloudButton.active i {
     color: #4caf50;
 }
+
+/* Estilo para o painel de categorias */
+#menuCategories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  background-color: #f8f9fa; /* Fundo clarinho */
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* Estilo dos botões de categorias */
+.categoria-botao {
+  flex: 1 1 40px; /* ocupa largura mínima */
+  min-width: 40px;
+  max-width: 60px;
+  height: 40px;
+  background-color: #007bff; /* Azul moderno */
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Hover nos botões */
+.categoria-botao:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Melhorando o espaço entre os itens */
+.filters-container {
+  margin-bottom: 20px;
+}
+
+/* Ajustes para duas linhas automáticas */
+#menuCategories {
+  max-width: 600px; /* Limita o tamanho para quebrar em linhas */
+  margin-left: auto;
+  margin-right: auto;
+}
+
