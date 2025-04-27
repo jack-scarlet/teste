@@ -1,4 +1,3 @@
-
 // main.js atualizado
 
 import { fetchAnimeData } from './modules/api.js';
@@ -48,7 +47,7 @@ const processAnimeData = (data) => {
     ];
 
     validCategories.forEach(category => {
-      if (Array.isArray(data[category])) {
+      if (Array.isArray(data[category])) {  // <-- Remova este parêntese extra
         animeList = [...animeList, ...data[category]];
       }
     });
