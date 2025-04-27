@@ -101,19 +101,17 @@ const applyAllFilters = (animes) => {
 };
 
 // Função principal
-async function initApp() {
+(async function initApp() {
   initMobileMenu();
   initFilterToggle();
   showLoadingSkeleton();
   initCloudButton();
 
+
   try {
     const response = await fetchAnimeData();
     const { animeList, lastAnime } = processAnimeData(response);
     allAnimes = animeList;
-
-    // Chama a função setupFilters aqui
-    setupFilters();
 
     if (isHomePage) {
       // Página inicial: último anime + 23 aleatórios
@@ -122,7 +120,7 @@ async function initApp() {
         : [...allAnimes];
 
       const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
-
+      
       filteredAnimes = lastAnime 
         ? [lastAnime, ...randomAnimes]
         : randomAnimes;
@@ -163,7 +161,7 @@ async function initApp() {
     console.error('Erro ao carregar dados:', error);
     showError(error);
   }
-}
+})();
 
 // Configura os filtros
 function setupFilters() {
@@ -250,14 +248,14 @@ function updateFilters() {
 
 // Mostra mensagem de erro
 function showError(error) {
-  document.getElementById('animeGrid').innerHTML = `
+  document.getElementById('animeGrid').innerHTML = 
     <div class="error-message">
       <i class="fas fa-exclamation-triangle"></i>
       <h3>Erro ao carregar conteúdo</h3>
       <p>${error.message}</p>
       <button onclick="window.location.reload()">Recarregar Página</button>
     </div>
-  `;
+  ;
 }
 
 // Ferramentas de debug
