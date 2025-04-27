@@ -29,7 +29,7 @@ export function createFilterSelect(id, label, options) {
   container.appendChild(select);
   
   // Adiciona ao DOM - assumindo que existe um elemento com id 'filters'
-  const filtersContainer = document.getElementById('filters') || document.body;
+  const container = document.getElementById('filters'); || document.body;
   filtersContainer.appendChild(container);
   
   return select;
