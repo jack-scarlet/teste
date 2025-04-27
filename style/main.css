@@ -760,11 +760,11 @@ body {
   margin-right: auto;
 }
 
-
-
-.filters-container.visible, #menuCategories.visible {
-  display: block; /* Ou flex, conforme necessário */
+/* Mantenha todos os estilos anteriores e adicione: */
+.filters-container, #menuCategories {
+  display: none;
 }
+
 
 .botao-nuvem.active {
   background-color: #0056b3;
