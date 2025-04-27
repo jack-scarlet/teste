@@ -3,7 +3,7 @@
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
-import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
+import { renderAnimeGrid,  } from './modules/render.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
@@ -114,7 +114,7 @@ function extractUniqueOptions(animes, filterConfig) {
 function updateFilters() {
   filteredAnimes = applyAllFilters(allAnimes);
   currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  renderAnimeGrid(filteredAnimes, 0, 30); // Carrega 30 + Lazy Loading de 30
 }
 
 function showError(error) {
