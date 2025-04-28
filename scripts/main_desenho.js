@@ -1,5 +1,3 @@
-// main.js corrigido para funcionar a busca na home
-
 import { fetchAnimeData } from './modules/api_desenho.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters_desenho.js';
