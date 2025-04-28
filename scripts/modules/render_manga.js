@@ -198,9 +198,7 @@ function openModal(anime) {
         </button>
         ` : ''}
         
-        <button class="modal-button watchlist">
-          <i class="fas fa-bookmark"></i> Favoritos
-        </button>
+
       </div>
     </div>
   `;
