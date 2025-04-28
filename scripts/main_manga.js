@@ -62,15 +62,27 @@ const processAnimeData = (data) => {
 
 const applyAllFilters = (animes) => {
   return animes.filter(anime => {
-    const matchesCategory = !currentFilters.category || (anime.category && anime.category === currentFilters.category);
-    const matchesNationality = !currentFilters.nationality || anime.nat === currentFilters.nationality;
-    const matchesGenre = !currentFilters.genre || (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
-    const matchesSeason = !currentFilters.season || (anime.start_season && anime.start_season.season === currentFilters.season);
-    const matchesYear = !currentFilters.year || (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
-    const matchesMediaType = !currentFilters.mediaType || anime.media_type === currentFilters.mediaType;
-    const matchesStudio = !currentFilters.studio || (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
+    // Verifica cada filtro individualmente
+    const matchesMediaType = !currentFilters.media_type || 
+      anime.media_type === currentFilters.media_type;
 
-    return matchesCategory && matchesNationality && matchesGenre && matchesSeason && matchesYear && matchesMediaType && matchesStudio;
+    const matchesGenre = !currentFilters.genre || 
+      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+
+    const matchesYear = !currentFilters.year || 
+      (anime.start_date && anime.start_date.startsWith(currentFilters.year)) ||
+      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+
+    const matchesAuthor = !currentFilters.authors || 
+      (typeof anime.authors === 'string' && anime.authors === currentFilters.authors) ||
+      (Array.isArray(anime.authors) && anime.authors.some(a => 
+        (a.name || a) === currentFilters.authors));
+
+    // Retorna true apenas se todos os filtros ativos corresponderem
+    return matchesMediaType && 
+           matchesGenre && 
+           matchesYear && 
+           matchesAuthor;
   });
 };
 
