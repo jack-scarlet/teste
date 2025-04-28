@@ -13,7 +13,7 @@ const INITIAL_RANDOM_COUNT = 23;
 // Estado global
 let allAnimes = [];
 let filteredAnimes = [];
-let currentPage = 1;
+let currentPage = 24;
 let isFetching = false;
 
 // Filtros
