@@ -1,7 +1,7 @@
 // scripts/modules/api.js
 export async function fetchAnimeData() {
   try {
-    const response = await fetch('../list/anime_list.json?_=' + Date.now());
+    const response = await fetch('../list/manga_list.json?_=' + Date.now());
     if (!response.ok) throw new Error("HTTP error: " + response.status);
     
     const data = await response.json();
