@@ -35,8 +35,7 @@ function getCountryName(code) {
     'JP': 'Japão',
     'CN': 'China',
     'KR': 'Coreia',
-    'US': 'EUA',
-    'BR': 'Brasil'
+    'OT': 'Outros'
     // Adicione outros conforme necessário
   };
   return countries[code] || code;
