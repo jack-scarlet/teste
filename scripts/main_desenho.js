@@ -2,7 +2,8 @@
 
 import { fetchAnimeData } from './modules/api_desenho.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
-import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_manga.js';
+import { FILTER_CONFIG, applyFilters } from './modules/filters_desenho.js';
+import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_desenho.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
@@ -17,7 +18,16 @@ let filteredAnimes = [];
 let currentPage = 1;
 let isFetching = false;
 
-
+// Filtros
+const currentFilters = {
+  category: null,
+  nationality: null,
+  genre: null,
+  season: null,
+  year: null,
+  mediaType: null,
+  studio: null
+};
 
 // Funções auxiliares
 const getRandomItems = (array, count) => {
@@ -50,7 +60,85 @@ const processAnimeData = (data) => {
   return { animeList, lastAnime };
 };
 
+const applyAllFilters = (animes) => {
+  return animes.filter(anime => {
+    // Verifica cada filtro individualmente
+    const matchesMediaType = !currentFilters.media_type || 
+      anime.media_type === currentFilters.media_type;
 
+    const matchesGenre = !currentFilters.genre || 
+      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+
+    const matchesYear = !currentFilters.year || 
+      (anime.start_date && anime.start_date.startsWith(currentFilters.year)) ||
+      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+
+    const matchesAuthor = !currentFilters.authors || 
+      (typeof anime.authors === 'string' && anime.authors === currentFilters.authors) ||
+      (Array.isArray(anime.authors) && anime.authors.some(a => 
+        (a.name || a) === currentFilters.authors));
+
+    // Retorna true apenas se todos os filtros ativos corresponderem
+    return matchesMediaType && 
+           matchesGenre && 
+           matchesYear && 
+           matchesAuthor;
+  });
+};
+
+function renderFiltersFromConfig() {
+  const filtersContainer = document.getElementById('filters');
+
+  FILTER_CONFIG.forEach(filter => {
+    const options = extractUniqueOptions(allAnimes, filter);
+
+    const select = document.createElement('select');
+    select.id = filter.id;
+    select.className = 'filter-select';
+    select.innerHTML = `
+      <option value="">Todos ${filter.label.toLowerCase()}</option>
+      ${options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
+    `;
+
+    select.addEventListener('change', () => {
+      currentFilters[filter.id] = select.value || null;
+      updateFilters();
+    });
+
+    const container = document.createElement('div');
+    container.className = 'filter-container';
+    container.innerHTML = `<label for="${filter.id}">${filter.label}</label>`;
+    container.appendChild(select);
+
+    filtersContainer.appendChild(container);
+  });
+}
+
+function extractUniqueOptions(animes, filterConfig) {
+  const options = new Set();
+  animes.forEach(anime => {
+    const extracted = filterConfig.extract(anime);
+    extracted.forEach(opt => options.add(JSON.stringify(opt)));
+  });
+  return Array.from(options).map(opt => JSON.parse(opt)).sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
+}
+
+function updateFilters() {
+  filteredAnimes = applyAllFilters(allAnimes);
+  currentPage = 1;
+  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+}
+
+function showError(error) {
+  document.getElementById('animeGrid').innerHTML = `
+    <div class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Erro ao carregar conteúdo</h3>
+      <p>${error.message}</p>
+      <button onclick="window.location.reload()">Recarregar Página</button>
+    </div>
+  `;
+}
 
 (async function initApp() {
   initMobileMenu();
