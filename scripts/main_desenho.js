@@ -2,7 +2,7 @@
 
 import { fetchAnimeData } from './modules/api_desenho.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
-import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_desenho.js';
+import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_manga.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
