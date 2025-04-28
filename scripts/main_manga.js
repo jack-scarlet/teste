@@ -3,7 +3,7 @@
 import { fetchAnimeData } from './modules/api_manga.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters_manga.js';
-import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
+import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_manga.js';
 import { initSearch } from './modules/search.js';
 import { setupIntersectionObserver } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
