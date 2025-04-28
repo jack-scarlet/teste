@@ -132,6 +132,7 @@ function showError(error) {
   initMobileMenu();
   initFilterToggle();
   showLoadingSkeleton();
+  initHomeButton(); // ✅ Adicione esta linha
   initCloudButton();
   initMenuButton();
 
@@ -293,4 +294,47 @@ function filterByCategory(category) {
   if (searchStatus) {
     searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${category}"`;
   }
+}
+
+// Adicione esta função no main.js
+function initHomeButton() {
+  const homeButton = document.getElementById('homeButton');
+  
+  homeButton.addEventListener('click', () => {
+    // Resetar todos os filtros
+    Object.keys(currentFilters).forEach(key => {
+      currentFilters[key] = null;
+    });
+    
+    // Resetar selects de filtro
+    document.querySelectorAll('.filter-select').forEach(select => {
+      select.value = '';
+    });
+    
+    // Resetar busca
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '';
+    
+    // Resetar status
+    const searchStatus = document.getElementById('searchStatus');
+    if (searchStatus) {
+      searchStatus.textContent = '';
+    }
+    
+    // Se for home page, mostrar os animes aleatórios + featured
+    if (isHomePage) {
+      const nonLastAnimes = allAnimes.filter(anime => !anime.isFeatured);
+      const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
+      const featuredAnime = allAnimes.find(anime => anime.isFeatured);
+      
+      filteredAnimes = featuredAnime ? [featuredAnime, ...randomAnimes] : randomAnimes;
+    } else {
+      // Se não for home page, mostrar todos os animes
+      filteredAnimes = [...allAnimes];
+    }
+    
+    // Renderizar grid
+    currentPage = 1;
+    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  });
 }
