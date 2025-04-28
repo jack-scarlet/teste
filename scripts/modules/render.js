@@ -200,9 +200,7 @@ function openModal(anime) {
           <i class="fas fa-cog"></i> ${hasCloudConfig ? 'Alterar Nuvem' : 'Configurar Nuvem'}
         </button>
         
-        <button class="modal-button watchlist">
-          <i class="fas fa-bookmark"></i> Favoritos
-        </button>
+       
       </div>
     </div>
   `;
