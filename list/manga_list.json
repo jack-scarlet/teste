@@ -1974,11 +1974,13 @@
     {
       "title": "Coleção Light Novel (Inglês)",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBn3XOKH6M5nLWBeBNlyYng8gzI3Heg-gedQ&s",
+      "media_type": "Outros",
       "url": "?path=%2FAnimes%2FLetra%20L%2FLight%20Novels"
     },
     {
       "title": "Coleção Mangas (Inglês)",
       "image": "https://cdn-icons-png.flaticon.com/512/4775/4775878.png",
+      "media_type": "Outros",
       "url": "?path=%2FAnimes%2FLetra%20M%2FMang%C3%A1s%20Publicados%20Digitalmente%20%5BINGL%C3%8AS%5D"
     },
     {
@@ -3839,7 +3841,7 @@
         }
       ],
       "authors": "Asako Takaboshi, Mizue Tani",
-      "media_type": "light_novel",
+      "media_type": "manga",
       "status": "finished"
     },
     {
@@ -6864,7 +6866,7 @@
         }
       ],
       "authors": "Takuma Yokota, Katsura Ise",
-      "media_type": "light_novel",
+      "media_type": "manga",
       "status": "finished"
     },
     {
