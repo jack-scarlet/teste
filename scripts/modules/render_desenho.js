@@ -49,10 +49,22 @@ function createAnimeCard(anime) {
         </div>
         ${isCloudLink ? '<span class="cloud-indicator" title="Abrir na nuvem"><i class="fas fa-cloud"></i></span>' : ''}
       </a>
-
+      <button class="anime-add-button" data-anime-id="${anime.id}">
+        <span class="plus-icon">+</span>
+      </button>
     </div>
   `;
 
+  // Adiciona o event listener para o botão
+  const addButton = card.querySelector('.anime-add-button');
+  addButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openModal(anime);
+  });
+
+  return card;
+}
 
 function getAnimeFullUrl(anime) {
   const CLOUD_KEY = 'anitsu_cloud_link';
