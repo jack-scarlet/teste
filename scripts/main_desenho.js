@@ -136,6 +136,13 @@ function showError(error) {
   initCloudButton();
   initMenuButton();
 
+document.addEventListener('DOMContentLoaded', () => {
+  const filterBtn = document.getElementById('toggleFilter');
+  if (filterBtn) {
+    filterBtn.style.display = 'none';
+  }
+});
+
   try {
     const response = await fetchAnimeData();
     const { animeList, lastAnime } = processAnimeData(response);
@@ -156,7 +163,7 @@ function showError(error) {
     });
 
     if (isHomePage) {
-      const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.id !== lastAnime.id) : [...allAnimes];
+      const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.title !== lastAnime.title) : [...allAnimes];
       const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
 
       filteredAnimes = lastAnime ? [lastAnime, ...randomAnimes] : randomAnimes;
