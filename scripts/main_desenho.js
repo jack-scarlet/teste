@@ -35,7 +35,7 @@ const getRandomItems = (array, count) => {
   return shuffled.slice(0, count);
 };
 
-const isHomePage = !window.location.pathname.includes('/pages/');
+const isHomePage = false;
 
 const processAnimeData = (data) => {
   let animeList = [];
