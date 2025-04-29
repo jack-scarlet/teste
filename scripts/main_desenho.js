@@ -45,7 +45,7 @@ const processAnimeData = (data) => {
     animeList = [...data];
     lastAnime = data[data.length - 1];
   } else {
-    const validCategories = ['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    const validCategories = ['#','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
     validCategories.forEach(category => {
       if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
@@ -168,7 +168,8 @@ function showError(error) {
     });
 
     if (isHomePage) {
-      const nonLastAnimes = lastAnime ? allAnimes.filter(anime => anime.id !== lastAnime.id) : [...allAnimes];
+      const nonLastAnimes = lastAnime   ? allAnimes.filter(anime => anime.title !== lastAnime.title)   : [...allAnimes];
+
       const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
 
       filteredAnimes = lastAnime ? [lastAnime, ...randomAnimes] : randomAnimes;
