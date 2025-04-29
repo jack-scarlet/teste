@@ -753,3 +753,24 @@ body {
 .filters-container {
   margin-bottom: 2px;
 }
+
+.prompt-header {
+  position: relative;
+}
+
+.prompt-header h3 {
+  margin: 0;
+  padding-right: 2.5rem; /* Espaço para o botão não sobrepor o texto */
+}
+
+.prompt-header .close-prompt {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: inherit; /* mesma cor do texto */
+  cursor: pointer;
+}
+
