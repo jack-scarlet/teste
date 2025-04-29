@@ -55,16 +55,7 @@ function createAnimeCard(anime) {
     </div>
   `;
 
-  // Adiciona o event listener para o botão
-  const addButton = card.querySelector('.anime-add-button');
-  addButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openModal(anime);
-  });
 
-  return card;
-}
 
 function getAnimeFullUrl(anime) {
   const CLOUD_KEY = 'anitsu_cloud_link';
