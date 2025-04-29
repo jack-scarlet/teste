@@ -137,7 +137,7 @@ export const initCloudButton = () => {
         closePrompt();
 
         // Recarrega após breve delay
-        setTimeout(() => window.location.reload(), 800);
+        setTimeout(() => window.location.reload(), 400);
     }
 
     function clearCloudLink() {
@@ -145,6 +145,8 @@ export const initCloudButton = () => {
         updateButtonAppearance(cloudButton, null);
         showToast('Link da nuvem removido', 'warning');
         closePrompt();
+        // Recarrega após breve delay
+        setTimeout(() => window.location.reload(), 400);
     }
 
     function updateButtonAppearance(button, link) {
