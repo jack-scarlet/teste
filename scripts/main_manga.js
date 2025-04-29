@@ -78,7 +78,7 @@ const applyAllFilters = (animes) => {
       (Array.isArray(anime.authors) && anime.authors.some(a => 
         (a.name || a) === currentFilters.authors));
 
-    // Retorna true apenas se todos os filtros ativos corresponderem
+    // Retorna true apenas se  os filtros ativos corresponderem
     return matchesMediaType && 
            matchesGenre && 
            matchesYear && 
@@ -96,7 +96,7 @@ function renderFiltersFromConfig() {
     select.id = filter.id;
     select.className = 'filter-select';
     select.innerHTML = `
-      <option value="">Todos ${filter.label.toLowerCase()}</option>
+      <option value="">Todos</option>
       ${options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
     `;
 
