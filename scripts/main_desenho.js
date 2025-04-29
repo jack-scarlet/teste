@@ -29,6 +29,14 @@ const currentFilters = {
   studio: null
 };
 
+// Funções auxiliares
+const getRandomItems = (array, count) => {
+  const shuffled = [...array].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
+
+const isHomePage = !window.location.pathname.includes('/home/');
+
 const processAnimeData = (data) => {
   let animeList = [];
   let lastAnime = null;
@@ -38,27 +46,44 @@ const processAnimeData = (data) => {
     lastAnime = data[data.length - 1];
   } else {
     const validCategories = ['#','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-    
-    // Processa todas as categorias válidas
     validCategories.forEach(category => {
       if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
       }
     });
-
-    // Remove a categoria 'history' da lista de animes principais
-    if (data.history && Array.isArray(data.history)) {
-      lastAnime = data.history[0]; // Pega o primeiro item da categoria history
-    } else {
-      // Se não tiver history, pega o último item da última categoria válida
-      const lastCategory = validCategories[validCategories.length - 1];
-      if (Array.isArray(data[lastCategory])) {
-        lastAnime = data[lastCategory][data[lastCategory].length - 1];
-      }
+    const lastCategory = validCategories[validCategories.length - 1];
+    if (Array.isArray(data[lastCategory]) && data[lastCategory].length > 0) {
+      lastAnime = data[lastCategory][data[lastCategory].length - 1];
     }
   }
 
   return { animeList, lastAnime };
+};
+
+const applyAllFilters = (animes) => {
+  return animes.filter(anime => {
+    // Verifica cada filtro individualmente
+    const matchesMediaType = !currentFilters.media_type || 
+      anime.media_type === currentFilters.media_type;
+
+    const matchesGenre = !currentFilters.genre || 
+      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+
+    const matchesYear = !currentFilters.year || 
+      (anime.start_date && anime.start_date.startsWith(currentFilters.year)) ||
+      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+
+    const matchesAuthor = !currentFilters.authors || 
+      (typeof anime.authors === 'string' && anime.authors === currentFilters.authors) ||
+      (Array.isArray(anime.authors) && anime.authors.some(a => 
+        (a.name || a) === currentFilters.authors));
+
+    // Retorna true apenas se todos os filtros ativos corresponderem
+    return matchesMediaType && 
+           matchesGenre && 
+           matchesYear && 
+           matchesAuthor;
+  });
 };
 
 function renderFiltersFromConfig() {
