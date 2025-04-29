@@ -35,7 +35,7 @@ const getRandomItems = (array, count) => {
   return shuffled.slice(0, count);
 };
 
-const isHomePage = false;
+const isHomePage = true;
 
 const processAnimeData = (data) => {
   let animeList = [];
