@@ -304,7 +304,7 @@ function filterByCategory(category) {
 
   const searchStatus = document.getElementById('searchStatus');
   if (searchStatus) {
-    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${category}"`;
+    searchStatus.textContent = `Exibindo ${filteredAnimes.length} mangas da categoria "${category}"`;
   }
 }
 
