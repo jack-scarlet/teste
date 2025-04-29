@@ -53,7 +53,6 @@ function createAnimeCard(anime) {
     </div>
   `;
 
-  /
 
 function getAnimeFullUrl(anime) {
   const CLOUD_KEY = 'anitsu_cloud_link';
