@@ -2,7 +2,7 @@
 export const initCloudButton = () => {
     const cloudButton = document.getElementById('cloudButton');
     const CLOUD_KEY = 'anitsu_cloud_link';
-    
+
     // Verificação segura do elemento
     if (!cloudButton) {
         console.warn('Elemento #cloudButton não encontrado');
@@ -11,25 +11,25 @@ export const initCloudButton = () => {
 
     // Inicializa a estrutura do botão
     initializeButtonStructure(cloudButton);
-    
+
     // Carrega link salvo e atualiza aparência
     const savedLink = localStorage.getItem(CLOUD_KEY);
     updateButtonAppearance(cloudButton, savedLink);
-    
+
     // Event listeners
     cloudButton.addEventListener('click', handleButtonClick);
-    
+
     // Funções auxiliares
     function initializeButtonStructure(button) {
         if (!button.querySelector('i')) {
             const icon = document.createElement('i');
             icon.className = 'fas fa-cloud';
             icon.ariaHidden = true;
-            
+
             const textSpan = document.createElement('span');
             textSpan.className = 'button-text';
             textSpan.textContent = 'Nuvem';
-            
+
             button.innerHTML = '';
             button.append(icon, textSpan);
         }
@@ -42,7 +42,7 @@ export const initCloudButton = () => {
             setTimeout(() => existingPrompt.remove(), 300);
             return;
         }
-        
+
         renderCloudPrompt();
     }
 
@@ -50,13 +50,13 @@ export const initCloudButton = () => {
         const savedLink = localStorage.getItem(CLOUD_KEY);
         const promptHTML = `
             <div class="cloud-prompt">
-                <div class="prompt-header">
-                    <button class="close-prompt" aria-label="Fechar">
-                    </br>
-                    <h3>Configurar Link da Nuvem</h3>
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+<div class="prompt-header">
+  <h3>Configurar Link da Nuvem</h3>
+  <button class="close-prompt" aria-label="Fechar">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+
                 <div class="prompt-body">
                     <p>Insira o link no formato:</p>
                     <p class="link-format"><code>https://cloud.anitsu.moe/nextcloud/s/randomstring</code></p>
@@ -80,12 +80,12 @@ export const initCloudButton = () => {
                 </div>
             </div>
         `;
-        
+
         document.body.insertAdjacentHTML('beforeend', promptHTML);
-        
+
         // Configura eventos
         setupPromptEvents();
-        
+
         // Foco automático no input
         document.getElementById('cloudLinkInput').focus();
     }
@@ -96,18 +96,18 @@ export const initCloudButton = () => {
             document.querySelector('.cloud-prompt').classList.add('fade-out');
             setTimeout(() => document.querySelector('.cloud-prompt').remove(), 300);
         });
-        
+
         // Salvar link
         document.getElementById('saveCloudLink').addEventListener('click', saveCloudLink);
-        
+
         // Limpar link
         document.getElementById('clearCloudLink').addEventListener('click', clearCloudLink);
-        
+
         // Abrir acervo
         document.getElementById('acervoButton').addEventListener('click', () => {
             window.open('https://anitsu.moe', '_blank');
         });
-        
+
         // Suporte para tecla Enter
         document.getElementById('cloudLinkInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') saveCloudLink();
@@ -118,24 +118,24 @@ export const initCloudButton = () => {
         const linkInput = document.getElementById('cloudLinkInput');
         const errorElement = document.getElementById('cloudError');
         const link = linkInput.value.trim();
-        
+
         // Validação
         if (!link) {
             showError(errorElement, 'Por favor, insira um link');
             return;
         }
-        
+
         if (!isValidCloudLink(link)) {
             showError(errorElement, 'Formato incorreto! Use: https://cloud.anitsu.moe/nextcloud/s/seucodigo');
             return;
         }
-        
+
         // Salva e atualiza
         localStorage.setItem(CLOUD_KEY, link);
         updateButtonAppearance(cloudButton, link);
         showToast('Link da nuvem salvo com sucesso!', 'success');
         closePrompt();
-        
+
         // Recarrega após breve delay
         setTimeout(() => window.location.reload(), 800);
     }
@@ -150,7 +150,7 @@ export const initCloudButton = () => {
     function updateButtonAppearance(button, link) {
         const icon = button.querySelector('i');
         const textSpan = button.querySelector('.button-text');
-        
+
         if (link) {
             icon.className = 'fas fa-cloud-check';
             button.title = `Link configurado: ${link}`;
@@ -183,7 +183,7 @@ export const initCloudButton = () => {
             <span>${message}</span>
         `;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.classList.add('fade-out');
             setTimeout(() => toast.remove(), 500);
