@@ -46,14 +46,23 @@ const processAnimeData = (data) => {
     lastAnime = data[data.length - 1];
   } else {
     const validCategories = ['#','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    
+    // Processa todas as categorias válidas
     validCategories.forEach(category => {
       if (Array.isArray(data[category])) {
         animeList = [...animeList, ...data[category]];
       }
     });
-    const lastCategory = validCategories[validCategories.length - 1];
-    if (Array.isArray(data[lastCategory]) && data[lastCategory].length > 0) {
-      lastAnime = data[lastCategory][data[lastCategory].length - 1];
+
+    // Remove a categoria 'history' da lista de animes principais
+    if (data.history && Array.isArray(data.history)) {
+      lastAnime = data.history[0]; // Pega o primeiro item da categoria history
+    } else {
+      // Se não tiver history, pega o último item da última categoria válida
+      const lastCategory = validCategories[validCategories.length - 1];
+      if (Array.isArray(data[lastCategory]) {
+        lastAnime = data[lastCategory][data[lastCategory].length - 1];
+      }
     }
   }
 
