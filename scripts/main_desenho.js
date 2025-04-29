@@ -37,28 +37,16 @@ const getRandomItems = (array, count) => {
 
 const isHomePage = true;
 
-const processAnimeData = (data) => {
-  let animeList = [];
-  let lastAnime = null;
-
-  if (Array.isArray(data)) {
-    animeList = [...data];
-    lastAnime = data[data.length - 1];
-  } else {
-    const validCategories = ['#','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-    validCategories.forEach(category => {
-      if (Array.isArray(data[category])) {
-        animeList = [...animeList, ...data[category]];
-      }
-    });
-    const lastCategory = validCategories[validCategories.length - 1];
-    if (Array.isArray(data[lastCategory]) && data[lastCategory].length > 0) {
-      lastAnime = data[lastCategory][data[lastCategory].length - 1];
-    }
-  }
-
-  return { animeList, lastAnime };
-};
+const nonLastAnimes = allAnimes.filter(anime => !anime.isFeatured);
+      const randomAnimes = getRandomItems(nonLastAnimes, INITIAL_RANDOM_COUNT);
+      const featuredAnime = allAnimes.find(anime => anime.isFeatured);
+      
+      filteredAnimes = featuredAnime ? [featuredAnime, ...randomAnimes] : randomAnimes;
+  
+    
+    // Renderizar grid
+    currentPage = 1;
+    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
 
 const applyAllFilters = (animes) => {
   return animes.filter(anime => {
