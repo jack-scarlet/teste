@@ -50,8 +50,7 @@ export const initCloudButton = () => {
         const savedLink = localStorage.getItem(CLOUD_KEY);
         const promptHTML = `
             <div class="cloud-prompt">
-                <div class="prompt-header">
-                    <button class="close-prompt" aria-label="Fechar">
+            <button class="close-prompt" aria-label="Fechar">
                     <h3>Configurar Link da Nuvem</h3>
                         <i class="fas fa-times"></i>
                     </button>
