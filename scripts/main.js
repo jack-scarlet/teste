@@ -151,7 +151,7 @@ function showError(error) {
 
       const searchInput = document.getElementById('searchInput');
       if (searchInput.value.trim()) {
-        document.getElementById('searchStatus').textContent = `Exibindo ${filteredAnimes.length} resultados`;
+        document.getElementById('searchStatus').textContent = `  Exibindo ${filteredAnimes.length} resultados`;
       }
     });
 
