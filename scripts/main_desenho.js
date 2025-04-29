@@ -136,12 +136,6 @@ function showError(error) {
   initCloudButton();
   initMenuButton();
 
-document.addEventListener('DOMContentLoaded', () => {
-  const filterBtn = document.getElementById('toggleFilter');
-  if (filterBtn) {
-    filterBtn.style.display = 'none';
-  }
-});
 
   try {
     const response = await fetchAnimeData();
