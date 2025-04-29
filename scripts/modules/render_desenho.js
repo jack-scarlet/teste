@@ -49,6 +49,31 @@ function createAnimeCard(anime) {
         </div>
         ${isCloudLink ? '<span class="cloud-indicator" title="Abrir na nuvem"><i class="fas fa-cloud"></i></span>' : ''}
       </a>
+    </div>
+  `;
+
+  return card;
+}
+
+
+  // Obtém o link completo
+  const fullUrl = getAnimeFullUrl(anime);
+  const isCloudLink = fullUrl.includes('cloud.anitsu.moe');
+  
+  card.innerHTML = `
+    <div class="anime-card-container">
+      <a href="${fullUrl}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
+        <img 
+          src="${anime.image}" 
+          alt="${anime.title}"
+          loading="lazy"
+          onerror="this.src=''"
+        >
+        <div class="anime-title-overlay">
+          <span>${anime.title}</span>
+        </div>
+        ${isCloudLink ? '<span class="cloud-indicator" title="Abrir na nuvem"><i class="fas fa-cloud"></i></span>' : ''}
+      </a>
       <button class="anime-add-button" data-anime-id="${anime.id}">
         <span class="plus-icon">+</span>
       </button>
