@@ -774,3 +774,8 @@ body {
   cursor: pointer;
 }
 
+#searchStatus {
+  margin-left: 1rem; /* ou 8px, 16px, etc. */
+  font-size: 0.9rem;
+  color: #fff; /* ajuste conforme seu tema */
+}
