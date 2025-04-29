@@ -1,8 +1,7 @@
-
 function createAnimeCard(anime) {
   const card = document.createElement('div');
   card.className = 'anime-card';
-  
+
   // Verifica se o anime tem URL
   if (!anime.url || anime.url === '#') {
     card.innerHTML = `
@@ -22,20 +21,18 @@ function createAnimeCard(anime) {
         </div>
       </div>
     `;
-    
-    // Adiciona evento para mostrar mensagem
+
     card.addEventListener('click', (e) => {
       e.preventDefault();
       showUnavailableMessage();
     });
-    
+
     return card;
   }
 
-  // Obtém o link completo
   const fullUrl = getAnimeFullUrl(anime);
   const isCloudLink = fullUrl.includes('cloud.anitsu.moe');
-  
+
   card.innerHTML = `
     <div class="anime-card-container">
       <a href="${fullUrl}" target="_blank" aria-label="${anime.title}" class="anime-image-link">
@@ -50,22 +47,12 @@ function createAnimeCard(anime) {
         </div>
         ${isCloudLink ? '<span class="cloud-indicator" title="Abrir na nuvem"><i class="fas fa-cloud"></i></span>' : ''}
       </a>
-      <button class="anime-add-button" data-anime-id="${anime.id}">
-        <span class="plus-icon">+</span>
-      </button>
     </div>
   `;
 
-  // Adiciona o event listener para o botão
-  const addButton = card.querySelector('.anime-add-button');
-  addButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openModal(anime);
-  });
-
   return card;
 }
+
 
 function getAnimeFullUrl(anime) {
   const CLOUD_KEY = 'anitsu_cloud_link';
