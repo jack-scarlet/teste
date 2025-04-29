@@ -51,8 +51,9 @@ export const initCloudButton = () => {
         const promptHTML = `
             <div class="cloud-prompt">
                 <div class="prompt-header">
-                    <h3>Configurar Link da Nuvem</h3>
                     <button class="close-prompt" aria-label="Fechar">
+                    </br>
+                    <h3>Configurar Link da Nuvem</h3>
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
