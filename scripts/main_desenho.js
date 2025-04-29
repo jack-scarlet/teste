@@ -1,6 +1,6 @@
 // main.js corrigido para funcionar a busca na home
 
-import { fetchAnimeData } from './modules/api_manga.js';
+import { fetchAnimeData } from './modules/api_desenho.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
 import { FILTER_CONFIG, applyFilters } from './modules/filters_manga.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render_manga.js';
