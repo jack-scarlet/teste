@@ -84,7 +84,7 @@ function renderFiltersFromConfig() {
     select.id = filter.id;
     select.className = 'filter-select';
     select.innerHTML = `
-      <option value="">Todos ${filter.label.toLowerCase()}</option>
+      <option value="">Todos</option>
       ${options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
     `;
 
