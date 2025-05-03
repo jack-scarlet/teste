@@ -3,10 +3,20 @@ export const FILTER_CONFIG = [
   {
     id: 'nationality',
     label: 'Nacionalidade',
-    extract: anime => anime.nat 
-      ? [{ value: anime.nat, label: getCountryName(anime.nat) }]
-      : []
-  },
+    extract: anime => {
+      const result = [];
+
+      if (anime.nat) {
+        result.push({ value: anime.nat, label: getCountryName(anime.nat) });
+      }
+
+      if (anime.dub) {
+        result.push({ value: anime.dub, label: getCountryName(anime.dub) });
+      }
+
+      return result;
+    }
+  }
   {
     id: 'genre',
     label: 'Gênero',
