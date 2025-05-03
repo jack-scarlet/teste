@@ -16,7 +16,7 @@ export const FILTER_CONFIG = [
 
       return result;
     }
-  }
+  },
   {
     id: 'genre',
     label: 'Gênero',
