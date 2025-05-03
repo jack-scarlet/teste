@@ -63,7 +63,7 @@ const processAnimeData = (data) => {
 const applyAllFilters = (animes) => {
   return animes.filter(anime => {
     const matchesCategory = !currentFilters.category || (anime.category && anime.category === currentFilters.category);
-    const matchesNationality = !currentFilters.nationality || anime.nat === currentFilters.nationality;
+    const matchesNationality = !currentFilters.nationality ||   anime.nat === currentFilters.nationality ||   anime.dub === currentFilters.nationality;
     const matchesGenre = !currentFilters.genre || (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
     const matchesSeason = !currentFilters.season || (anime.start_season && anime.start_season.season === currentFilters.season);
     const matchesYear = !currentFilters.year || (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
