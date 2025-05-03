@@ -26,8 +26,8 @@ export const FILTER_CONFIG = [
     label: 'Estúdio',
     extract: anime => anime.studios?.map(s => ({ value: s.name, label: s.name })) || [],
     sort: (a, b) => a.label.localeCompare(b.label) // Ordena alfabeticamente
-  }
- {
+  },
+  { // Adicionada a vírgula aqui
     id: 'dub',
     label: 'Dublagem',
     extract: anime => anime.dub === "true" 
