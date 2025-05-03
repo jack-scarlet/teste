@@ -27,6 +27,13 @@ export const FILTER_CONFIG = [
     extract: anime => anime.studios?.map(s => ({ value: s.name, label: s.name })) || [],
     sort: (a, b) => a.label.localeCompare(b.label) // Ordena alfabeticamente
   }
+ {
+    id: 'dub',
+    label: 'Dublagem',
+    extract: anime => anime.dub === "true" 
+      ? [{ value: 'true', label: 'Dublado' }] 
+      : [{ value: 'false', label: 'Sem Dublagem' }],
+  }
 ];
 
 // Função auxiliar para nome de países
@@ -55,6 +62,8 @@ export function applyFilters(animes, filters) {
           return anime.start_season?.year == value;
         case 'studio':
           return anime.studios?.some(s => s.name === value);
+        case 'dub':
+          return anime.dub === value; // Filtro de Dublagem
         default:
           return true;
       }
