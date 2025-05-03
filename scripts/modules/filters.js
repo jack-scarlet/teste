@@ -26,13 +26,6 @@ export const FILTER_CONFIG = [
     label: 'Estúdio',
     extract: anime => anime.studios?.map(s => ({ value: s.name, label: s.name })) || [],
     sort: (a, b) => a.label.localeCompare(b.label) // Ordena alfabeticamente
-  },
-  { // Adicionada a vírgula aqui
-    id: 'dub',
-    label: 'Dublagem',
-    extract: anime => anime.dub === "true" 
-      ? [{ value: 'true', label: 'Sim' }] 
-      : [{ value: 'false', label: 'Não' }],
   }
 ];
 
@@ -62,8 +55,6 @@ export function applyFilters(animes, filters) {
           return anime.start_season?.year == value;
         case 'studio':
           return anime.studios?.some(s => s.name === value);
-        case 'dub':
-          return anime.dub === value; // Filtro de Dublagem
         default:
           return true;
       }
