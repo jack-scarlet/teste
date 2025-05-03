@@ -31,8 +31,8 @@ export const FILTER_CONFIG = [
     id: 'dub',
     label: 'Dublagem',
     extract: anime => anime.dub === "true" 
-      ? [{ value: 'true', label: 'Dublado' }] 
-      : [{ value: 'false', label: 'Sem Dublagem' }],
+      ? [{ value: 'true', label: 'Sim' }] 
+      : [{ value: 'false', label: 'Não' }],
   }
 ];
 
