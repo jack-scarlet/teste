@@ -51,7 +51,7 @@ function getCountryName(code) {
   return countries[code] || code;
 }
 
-export function applyFilters(animes, filters) {
+export function filterAndSearch(animes, filters) {
   return animes.filter(anime => {
     return Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
