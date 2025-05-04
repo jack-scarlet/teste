@@ -50,21 +50,6 @@ export const FILTER_CONFIG = [
     sort: (a, b) => b.value - a.value
   },
   {
-    id: 'season',
-    label: 'Temporada',
-    extract: anime => anime.start_season?.season
-      ? [{
-          value: anime.start_season.season,
-          label: getSeasonName(anime.start_season.season),
-          count: 1
-        }]
-      : [],
-    sort: (a, b) => {
-      const seasonOrder = { 'winter': 1, 'spring': 2, 'summer': 3, 'fall': 4 };
-      return seasonOrder[a.value] - seasonOrder[b.value];
-    }
-  },
-  {
     id: 'studio',
     label: 'Estúdio',
     extract: anime => anime.studios?.map(s => ({ 
@@ -106,8 +91,6 @@ export function applyFilters(animes, filters) {
           return anime.genres?.some(g => g.name === value);
         case 'year':
           return anime.start_season?.year == value;
-        case 'season':
-          return anime.start_season?.season === value;
         case 'studio':
           return anime.studios?.some(s => s.name === value);
         case 'mediaType':
@@ -160,15 +143,6 @@ function getCountryName(code) {
   return countries[code] || code;
 }
 
-function getSeasonName(season) {
-  const seasons = {
-    'winter': 'Inverno',
-    'spring': 'Primavera',
-    'summer': 'Verão',
-    'fall': 'Outono'
-  };
-  return seasons[season] || season;
-}
 
 function getMediaTypeName(type) {
   const types = {
