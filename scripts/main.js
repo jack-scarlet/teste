@@ -276,19 +276,9 @@ function initMenuButton() {
 
 // Filtra animes por categoria/letra
 function filterByCategory(category) {
-  filteredAnimes = allAnimes.filter(anime => {
-    if (!anime.title) return false;
-    const firstChar = anime.title.trim()[0].toUpperCase();
-    if (category === '#') {
-      // Para "#" pega títulos que NÃO começam com letras (0-9, símbolos)
-      return !/^[A-Z]/.test(firstChar);
-    } else {
-      return firstChar === category;
-    }
-  });
-
-  currentPage = 1;
-  renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  currentFilters.category = category === 'Todos' ? null : category;
+  updateFilters();
+}
 
   const searchStatus = document.getElementById('searchStatus');
   if (searchStatus) {
