@@ -23,7 +23,9 @@ const currentFilters = {
   category: null,
   nationality: null,
   genre: null,
+  season: null,
   year: null,
+  mediaType: null,
   studio: null,
   searchTerm: null
 };
@@ -105,7 +107,9 @@ function updateFilters() {
     const matchesSeason = !currentFilters.season || 
       (anime.start_season && anime.start_season.season === currentFilters.season);
     
-   
+    const matchesMediaType = !currentFilters.mediaType || 
+      anime.media_type === currentFilters.mediaType;
+    
     const matchesStudio = !currentFilters.studio || 
       (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
 
