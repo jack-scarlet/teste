@@ -23,7 +23,6 @@ const currentFilters = {
   category: null,
   nationality: null,
   genre: null,
-  season: null,
   year: null,
   mediaType: null,
   studio: null,
@@ -109,8 +108,6 @@ const applyAllFilters = (animes) => {
       anime.dub === currentFilters.nationality;
     const matchesGenre = !currentFilters.genre || 
       (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
-    const matchesSeason = !currentFilters.season || 
-      (anime.start_season && anime.start_season.season === currentFilters.season);
     const matchesYear = !currentFilters.year || 
       (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
     const matchesMediaType = !currentFilters.mediaType || 
@@ -119,7 +116,7 @@ const applyAllFilters = (animes) => {
       (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
 
     return matchesCategory && matchesNationality && matchesGenre && 
-           matchesSeason && matchesYear && matchesMediaType && matchesStudio;
+           matchesYear && matchesMediaType && matchesStudio;
   });
 };
 
