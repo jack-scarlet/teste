@@ -1,22 +1,70 @@
-// Versão final consolidada
+// Versão modificada com integração de filtros e categorias
 import { normalizeString } from './utils.js';
 
+let globalData = [];
+let currentSearchTerm = '';
+let scoredMap = new Map();
+
 export function initSearch(data, onSearch) {
+  globalData = data;
+
   const input = document.getElementById('searchInput');
   const button = document.getElementById('searchButton');
 
   const normalizeSearchTerm = (str) => {
-    return normalizeString(str).replace(/[:\-_\.\s]/g, '');
+    return normalizeString(str).replace(/[:\\-_.\\s]/g, '');
   };
 
   const handleSearch = () => {
-    const term = normalizeSearchTerm(input.value);
-    if (!term) {
-      onSearch(data);
-      return;
-    }
+    currentSearchTerm = normalizeSearchTerm(input.value);
+    filterAndSearch(onSearch);
+  };
 
-    const scoredResults = data.map(anime => {
+  // Mensagem quando não encontra resultados
+  const displayNoResultsMessage = (term) => {
+    removeNoResultsMessage();
+
+    const message = document.createElement('div');
+    message.id = 'noResultsMessage';
+    message.className = 'no-results';
+    message.innerHTML = `
+      <p>Nenhum anime encontrado para <strong>"${term}"</strong></p>
+      <p class="suggestion">Sugestão: Tente buscar por termos mais gerais</p>
+    `;
+
+    const animeGrid = document.getElementById('animeGrid');
+    animeGrid.parentNode.insertBefore(message, animeGrid);
+  };
+
+  const removeNoResultsMessage = () => {
+    const existingMsg = document.getElementById('noResultsMessage');
+    if (existingMsg) existingMsg.remove();
+  };
+
+  input.addEventListener('input', handleSearch);
+  button.addEventListener('click', handleSearch);
+}
+
+export function filterAndSearch(onSearchCallback) {
+  const selectedGenres = Array.from(document.querySelectorAll('.genre-checkbox:checked')).map(el => el.value);
+  const selectedStatus = document.querySelector('.status-filter.active')?.dataset.status;
+  const selectedQuality = document.querySelector('.quality-filter.active')?.dataset.quality;
+  const selectedCategory = window.selectedCategory || null;
+
+  let filtered = globalData.filter(anime => {
+    const matchesGenre = selectedGenres.length === 0 || selectedGenres.every(genre => anime.genres.includes(genre));
+    const matchesStatus = !selectedStatus || anime.status_anime === selectedStatus;
+    const matchesQuality = !selectedQuality || anime.qualidade === selectedQuality;
+
+    const firstLetter = anime.title.charAt(0).toUpperCase();
+    const matchesCategory = !selectedCategory || selectedCategory === '#' ? true : firstLetter === selectedCategory;
+
+    return matchesGenre && matchesStatus && matchesQuality && matchesCategory;
+  });
+
+  // Aplica pontuação se houver termo de busca
+  if (currentSearchTerm) {
+    const scoredResults = filtered.map(anime => {
       let score = 0;
       const fields = [
         { value: anime.title, priority: 4 },
@@ -26,7 +74,7 @@ export function initSearch(data, onSearch) {
       ].filter(field => field.value);
 
       fields.forEach(field => {
-        if (normalizeSearchTerm(field.value).includes(term)) {
+        if (normalizeString(field.value).replace(/[:\\-_.\\s]/g, '').includes(currentSearchTerm)) {
           score = Math.max(score, field.priority);
         }
       });
@@ -37,40 +85,15 @@ export function initSearch(data, onSearch) {
     .sort((a, b) => b.score - a.score)
     .map(item => item.anime);
 
-    if (scoredResults.length === 0) {
-      displayNoResultsMessage(input.value);
-    } else {
-      removeNoResultsMessage();
-    }
-    
-    onSearch(scoredResults);
-  };
+    filtered = scoredResults;
+  }
 
-  // Mensagem quando não encontra resultados
-  const displayNoResultsMessage = (term) => {
-    removeNoResultsMessage();
-    
-    const message = document.createElement('div');
-    message.id = 'noResultsMessage';
-    message.className = 'no-results';
-    message.innerHTML = `
-      <p>Nenhum anime encontrado para <strong>"${term}"</strong></p>
-      <p class="suggestion">Sugestão: Tente buscar por termos mais gerais</p>
-    `;
-    
-    const animeGrid = document.getElementById('animeGrid');
-    animeGrid.parentNode.insertBefore(message, animeGrid);
-  };
+  if (filtered.length === 0) {
+    displayNoResultsMessage(currentSearchTerm);
+  } else {
+    const msg = document.getElementById('noResultsMessage');
+    if (msg) msg.remove();
+  }
 
-  const removeNoResultsMessage = () => {
-    const existingMsg = document.getElementById('noResultsMessage');
-    if (existingMsg) existingMsg.remove();
-  };
-
-  // Event listeners
-  input.addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') handleSearch();
-  });
-
-  button.addEventListener('click', handleSearch);
+  onSearchCallback(filtered);
 }
