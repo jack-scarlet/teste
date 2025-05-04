@@ -83,10 +83,10 @@ function renderFiltersFromConfig() {
     const select = document.createElement('select');
     select.id = filter.id;
     select.className = 'filter-select';
-    select.innerHTML = 
+    select.innerHTML = `
       <option value="">Todos</option>
-      ${options.map(opt => <option value="${opt.value}">${opt.label}</option>).join('')}
-    ;
+      ${options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
+    `;
 
     select.addEventListener('change', () => {
       currentFilters[filter.id] = select.value || null;
@@ -95,7 +95,7 @@ function renderFiltersFromConfig() {
 
     const container = document.createElement('div');
     container.className = 'filter-container';
-    container.innerHTML = <label for="${filter.id}">${filter.label}</label>;
+    container.innerHTML = `<label for="${filter.id}">${filter.label}</label>`;
     container.appendChild(select);
 
     filtersContainer.appendChild(container);
@@ -118,14 +118,14 @@ function updateFilters() {
 }
 
 function showError(error) {
-  document.getElementById('animeGrid').innerHTML = 
+  document.getElementById('animeGrid').innerHTML = `
     <div class="error-message">
       <i class="fas fa-exclamation-triangle"></i>
       <h3>Erro ao carregar conteúdo</h3>
       <p>${error.message}</p>
       <button onclick="window.location.reload()">Recarregar Página</button>
     </div>
-  ;
+  `;
 }
 
 (async function initApp() {
@@ -151,7 +151,7 @@ function showError(error) {
 
       const searchInput = document.getElementById('searchInput');
       if (searchInput.value.trim()) {
-        document.getElementById('searchStatus').textContent =   Exibindo ${filteredAnimes.length} resultados;
+        document.getElementById('searchStatus').textContent = `  Exibindo ${filteredAnimes.length} resultados`;
       }
     });
 
@@ -292,7 +292,7 @@ function filterByCategory(category) {
 
   const searchStatus = document.getElementById('searchStatus');
   if (searchStatus) {
-    searchStatus.textContent = Exibindo ${filteredAnimes.length} animes da categoria "${category}";
+    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${category}"`;
   }
 }
 
