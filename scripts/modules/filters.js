@@ -1,4 +1,5 @@
 // modules/filters.js
+// modules/filters.js
 export const FILTER_CONFIG = [
   {
     id: 'nationality',
@@ -10,7 +11,7 @@ export const FILTER_CONFIG = [
         result.push({ value: anime.nat, label: getCountryName(anime.nat) });
       }
 
-      if (anime.dub) {
+      if (anime.dub && anime.dub !== anime.nat) {
         result.push({ value: anime.dub, label: getCountryName(anime.dub) });
       }
 
