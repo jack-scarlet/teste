@@ -338,3 +338,36 @@ function initHomeButton() {
     renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
   });
 }
+
+let selectedCategory = null;
+
+function filterByCategory(category) {
+  selectedCategory = category;
+  filterAndSearch();
+}
+
+function filterAndSearch() {
+  const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+
+  const selectedGenres = Array.from(document.querySelectorAll('.genre-checkbox:checked')).map(el => el.value);
+  const selectedStatus = document.querySelector('.status-filter.active')?.dataset.status;
+  const selectedQuality = document.querySelector('.quality-filter.active')?.dataset.quality;
+
+  const filtered = animeList.filter(anime => {
+    const inTitle = anime.title.toLowerCase().includes(searchTerm);
+    const inAltTitles = anime.alternative_titles?.some(t => t.toLowerCase().includes(searchTerm));
+    const inSynopsis = anime.synopsis?.toLowerCase().includes(searchTerm);
+    const matchesSearch = !searchTerm || inTitle || inAltTitles || inSynopsis;
+
+    const matchesGenre = selectedGenres.length === 0 || selectedGenres.every(genre => anime.genres.includes(genre));
+    const matchesStatus = !selectedStatus || anime.status_anime === selectedStatus;
+    const matchesQuality = !selectedQuality || anime.qualidade === selectedQuality;
+
+    const firstLetter = anime.title.charAt(0).toUpperCase();
+    const matchesCategory = !selectedCategory || selectedCategory === '#' ? true : firstLetter === selectedCategory;
+
+    return matchesSearch && matchesGenre && matchesStatus && matchesQuality && matchesCategory;
+  });
+
+  displayAnimes(filtered);
+}
