@@ -1,10 +1,10 @@
-// main.js - Versão integrada completa
+// main.js - Versão final com correção de integração busca/filtros
 
 import { fetchAnimeData } from './modules/api.js';
 import { initMobileMenu, initFilterToggle } from './modules/dom.js';
-import { FILTER_CONFIG, applyFilters } from './modules/filters.js';
+import { FILTER_CONFIG, applyFilters, extractUniqueOptions } from './modules/filters.js';
 import { renderAnimeGrid, showLoadingSkeleton } from './modules/render.js';
-import { initSearch, displayNoResultsMessage, removeNoResultsMessage } from './modules/search.js';
+import { initSearch, displayNoResultsMessage, removeNoResultsMessage, applySearch } from './modules/search.js';
 import { setupIntersectionObserver, normalizeString } from './modules/utils.js';
 import { initCloudButton } from './modules/cloud.js';
 
@@ -23,6 +23,7 @@ const currentFilters = {
   category: null,
   nationality: null,
   genre: null,
+  season: null,
   year: null,
   mediaType: null,
   studio: null,
@@ -60,67 +61,7 @@ const processAnimeData = (data) => {
   return { animeList, lastAnime };
 };
 
-// Função para normalizar termos de busca
-const normalizeSearchTerm = (str) => {
-  return normalizeString(str).replace(/[:\-_\.\s]/g, '');
-};
-
-// Aplica todos os filtros de forma integrada
-const applyAllFilters = (animes) => {
-  let results = [...animes];
-  
-  // Aplica busca primeiro, se houver termo
-  if (currentFilters.searchTerm) {
-    const term = normalizeSearchTerm(currentFilters.searchTerm);
-    if (term) {
-      results = results.map(anime => {
-        let score = 0;
-        const fields = [
-          { value: anime.title, priority: 4 },
-          ...(anime.alternative_titles?.synonyms?.map(text => ({ value: text, priority: 3 })) || []),
-          { value: anime.alternative_titles?.en, priority: 2 },
-          { value: anime.alternative_titles?.ja, priority: 1 }
-        ].filter(field => field.value);
-
-        fields.forEach(field => {
-          if (normalizeSearchTerm(field.value).includes(term)) {
-            score = Math.max(score, field.priority);
-          }
-        });
-
-        return { anime, score };
-      })
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .map(item => item.anime);
-    }
-  }
-
-  // Aplica os demais filtros
-  return results.filter(anime => {
-    // Filtro de categoria (do menu)
-    const matchesCategory = !currentFilters.category || 
-      (anime.title && checkCategoryMatch(anime.title, currentFilters.category));
-    
-    // Filtros normais (do painel de filtros)
-    const matchesNationality = !currentFilters.nationality || 
-      anime.nat === currentFilters.nationality || 
-      anime.dub === currentFilters.nationality;
-    const matchesGenre = !currentFilters.genre || 
-      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
-    const matchesYear = !currentFilters.year || 
-      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
-    const matchesMediaType = !currentFilters.mediaType || 
-      anime.media_type === currentFilters.mediaType;
-    const matchesStudio = !currentFilters.studio || 
-      (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
-
-    return matchesCategory && matchesNationality && matchesGenre && 
-           matchesYear && matchesMediaType && matchesStudio;
-  });
-};
-
-// Função auxiliar para verificar match de categoria
+// Função para verificar match de categoria
 function checkCategoryMatch(title, category) {
   if (!title) return false;
   const firstChar = title.trim()[0].toUpperCase();
@@ -129,6 +70,98 @@ function checkCategoryMatch(title, category) {
     return !/^[A-Z]/.test(firstChar);
   } else {
     return firstChar === category;
+  }
+}
+
+// Limpa completamente os resultados antes de aplicar novos filtros
+function clearResults() {
+  const animeGrid = document.getElementById('animeGrid');
+  animeGrid.innerHTML = '';
+  removeNoResultsMessage();
+}
+
+// Atualiza todos os filtros e renderiza os resultados
+function updateFilters() {
+  clearResults(); // Limpa os resultados antes de aplicar novos filtros
+  
+  // Aplica busca primeiro se houver termo
+  let results = currentFilters.searchTerm 
+    ? applySearch(allAnimes, currentFilters.searchTerm)
+    : [...allAnimes];
+
+  // Aplica os demais filtros
+  filteredAnimes = results.filter(anime => {
+    const matchesCategory = !currentFilters.category || 
+      (anime.title && checkCategoryMatch(anime.title, currentFilters.category));
+    
+    const matchesNationality = !currentFilters.nationality || 
+      anime.nat === currentFilters.nationality || 
+      anime.dub === currentFilters.nationality;
+    
+    const matchesGenre = !currentFilters.genre || 
+      (anime.genres && anime.genres.some(g => g.name === currentFilters.genre));
+    
+    const matchesYear = !currentFilters.year || 
+      (anime.start_season && anime.start_season.year === parseInt(currentFilters.year));
+    
+    const matchesSeason = !currentFilters.season || 
+      (anime.start_season && anime.start_season.season === currentFilters.season);
+    
+    const matchesMediaType = !currentFilters.mediaType || 
+      anime.media_type === currentFilters.mediaType;
+    
+    const matchesStudio = !currentFilters.studio || 
+      (anime.studios && anime.studios.some(s => s.name === currentFilters.studio));
+
+    return matchesCategory && matchesNationality && matchesGenre && 
+           matchesYear && matchesSeason && matchesMediaType && matchesStudio;
+  });
+
+  // Atualiza a exibição
+  if (filteredAnimes.length === 0) {
+    if (currentFilters.searchTerm) {
+      displayNoResultsMessage(currentFilters.searchTerm);
+    } else {
+      const activeFilters = Object.entries(currentFilters)
+        .filter(([_, value]) => value)
+        .map(([key]) => key);
+      
+      if (activeFilters.length > 0) {
+        document.getElementById('animeGrid').innerHTML = `
+          <div class="no-results">
+            <p>Nenhum anime encontrado com os filtros aplicados</p>
+          </div>
+        `;
+      }
+    }
+  } else {
+    currentPage = 1;
+    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
+  }
+
+  updateSearchStatus();
+}
+
+// Atualiza a mensagem de status
+function updateSearchStatus() {
+  const searchStatus = document.getElementById('searchStatus');
+  if (!searchStatus) return;
+  
+  if (currentFilters.searchTerm) {
+    searchStatus.textContent = filteredAnimes.length > 0 
+      ? `Exibindo ${filteredAnimes.length} resultados para "${currentFilters.searchTerm}"`
+      : `Nenhum resultado para "${currentFilters.searchTerm}"`;
+  } else if (currentFilters.category) {
+    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${currentFilters.category}"`;
+  } else {
+    const activeFilters = Object.entries(currentFilters)
+      .filter(([key, value]) => value && key !== 'searchTerm' && key !== 'category');
+    
+    if (activeFilters.length > 0) {
+      searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes com os filtros aplicados`;
+    } else {
+      searchStatus.textContent = '';
+    }
   }
 }
 
@@ -160,53 +193,6 @@ function renderFiltersFromConfig() {
   });
 }
 
-function extractUniqueOptions(animes, filterConfig) {
-  const options = new Set();
-  animes.forEach(anime => {
-    const extracted = filterConfig.extract(anime);
-    extracted.forEach(opt => options.add(JSON.stringify(opt)));
-  });
-  return Array.from(options).map(opt => JSON.parse(opt)).sort(filterConfig.sort || ((a, b) => a.label.localeCompare(b.label)));
-}
-
-// Atualiza todos os filtros e renderiza os resultados
-function updateFilters() {
-  filteredAnimes = applyAllFilters(allAnimes);
-  currentPage = 1;
-  
-  // Mostra mensagem se não houver resultados
-  if (filteredAnimes.length === 0 && (currentFilters.searchTerm || currentFilters.category)) {
-    if (currentFilters.searchTerm) {
-      displayNoResultsMessage(currentFilters.searchTerm);
-    } else {
-      document.getElementById('animeGrid').innerHTML = `
-        <div class="no-results">
-          <p>Nenhum anime encontrado para a categoria "${currentFilters.category}"</p>
-        </div>
-      `;
-    }
-  } else {
-    removeNoResultsMessage();
-    renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
-  }
-  
-  updateSearchStatus();
-}
-
-// Atualiza a mensagem de status
-function updateSearchStatus() {
-  const searchStatus = document.getElementById('searchStatus');
-  if (!searchStatus) return;
-  
-  if (currentFilters.searchTerm) {
-    searchStatus.textContent = `Exibindo ${filteredAnimes.length} resultados para "${currentFilters.searchTerm}"`;
-  } else if (currentFilters.category) {
-    searchStatus.textContent = `Exibindo ${filteredAnimes.length} animes da categoria "${currentFilters.category}"`;
-  } else {
-    searchStatus.textContent = '';
-  }
-}
-
 function showError(error) {
   document.getElementById('animeGrid').innerHTML = `
     <div class="error-message">
@@ -218,7 +204,6 @@ function showError(error) {
   `;
 }
 
-// Inicializa o botão de menu e categorias
 function initMenuButton() {
   const menuButton = document.getElementById('menuButton');
   const menuCategories = document.getElementById('menuCategories');
@@ -289,7 +274,6 @@ function initMenuButton() {
   }
 }
 
-// Inicializa o botão Home
 function initHomeButton() {
   const homeButton = document.getElementById('homeButton');
   
@@ -374,7 +358,7 @@ function initHomeButton() {
         }
       });
 
-      filteredAnimes = applyAllFilters(allAnimes);
+      filteredAnimes = [...allAnimes];
       renderAnimeGrid(filteredAnimes, 0, ANIMES_PER_PAGE);
     }
   } catch (error) {
