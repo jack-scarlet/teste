@@ -58,18 +58,6 @@ export const FILTER_CONFIG = [
       count: 1
     })) || [],
     sort: (a, b) => a.label.localeCompare(b.label)
-  },
-  {
-    id: 'mediaType',
-    label: 'Tipo de Mídia',
-    extract: anime => anime.media_type
-      ? [{
-          value: anime.media_type,
-          label: getMediaTypeName(anime.media_type),
-          count: 1
-        }]
-      : [],
-    sort: (a, b) => a.label.localeCompare(b.label)
   }
 ];
 
@@ -93,8 +81,6 @@ export function applyFilters(animes, filters) {
           return anime.start_season?.year == value;
         case 'studio':
           return anime.studios?.some(s => s.name === value);
-        case 'mediaType':
-          return anime.media_type === value;
         default:
           return true;
       }
@@ -144,16 +130,6 @@ function getCountryName(code) {
 }
 
 
-function getMediaTypeName(type) {
-  const types = {
-    'tv': 'TV',
-    'movie': 'Filme',
-    'ova': 'OVA',
-    'ona': 'ONA',
-    'special': 'Especial'
-  };
-  return types[type] || type;
-}
 
 /**
  * Atualiza as contagens dos filtros com base nos animes visíveis
